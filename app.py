@@ -75,7 +75,7 @@ def sort_docs(doc_dict):
 def homepage():
     return render_template("main1.html");
 state=0
-print ('state=', state)
+print ('state=', state, "test0")
 
 @app.route("/get")
 def get_bot_response():
