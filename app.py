@@ -82,7 +82,7 @@ def homepage():
 state=0
 print ('state=', state, "test3")
 
-#@app.route("/get")
+@app.route("/get")
 def get_bot_response():
     state=1
     print ('state=', state, "test3")
