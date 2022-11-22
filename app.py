@@ -1,4 +1,5 @@
 #!/usr/bin/env python3.9.15 
+import os
 import csv
 import json
 from collections import OrderedDict
@@ -257,4 +258,6 @@ def get_bot_response():
             return str(userText+" is not a valid selection from above")+" state="+str(state)
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
+    #app.run()
