@@ -78,7 +78,7 @@ def sort_docs(doc_dict):
 
 @app.route('/')
 def homepage():
-    return render_template("main2.html");
+    return render_template("main3.html");
 state=0
 print ('state=', state, "test3")
 
