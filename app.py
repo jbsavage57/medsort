@@ -33,7 +33,7 @@ import nlp_project_final_3
 from nlp_project_final_3 import convert, convert_raw, normalize_corpus_num
 
 #class App:
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 vectorizer = joblib.load("vectorizer.jbl")
 nmf = joblib.load("nmf.jbl")
 maxind_fixed=pd.DataFrame(data=np.array([1,2,0]), index=['Topic 1', 'Topic 2', 'Topic 3']).squeeze()
