@@ -34,14 +34,19 @@ from nlp_project_final_3 import convert, convert_raw, normalize_corpus_num
 
 #class App:
 app = Flask(__name__)        #, template_folder='templates'
+global state
+global doc_dict
+global file_of_docs
+global file_count, list_of_files
 vectorizer = joblib.load("vectorizer.jbl")
 nmf = joblib.load("nmf.jbl")
 maxind_fixed=pd.DataFrame(data=np.array([1,2,0]), index=['Topic 1', 'Topic 2', 'Topic 3']).squeeze()
-print ('maxind_fixed', maxind_fixed)
+#print ('maxind_fixed', maxind_fixed)
 num_label_list = [0,1,2]                                      #list of manually added label types
 text_label_list = ['test', 'procedure', 'note']                #list of descriptive label types
 label_dict = dict(zip(num_label_list, text_label_list))
-
+state=-1
+print ('state=', state, "test3")    
 
 
 #print ('label+dict', label_dict)
@@ -75,14 +80,13 @@ def sort_docs(doc_dict):
 def homepage():
     return render_template("main1.html");
 state=0
-print ('state=', state, "test2")
+print ('state=', state, "test3")
 
 @app.route("/get")
 def get_bot_response():
-    global state
-    global doc_dict
-    global file_of_docs
-    global file_count, list_of_files
+    state=1
+    print ('state=', state, "test3")
+    
     userText = request.args.get('msg')
     if state == 1:
         file_of_docs = userText
