@@ -34,10 +34,7 @@ from nlp_project_final_3 import convert, convert_raw, normalize_corpus_num
 
 #class App:
 app = Flask(__name__)        #, template_folder='templates'
-global state
-global doc_dict
-global file_of_docs
-global file_count, list_of_files
+
 vectorizer = joblib.load("vectorizer.jbl")
 nmf = joblib.load("nmf.jbl")
 maxind_fixed=pd.DataFrame(data=np.array([1,2,0]), index=['Topic 1', 'Topic 2', 'Topic 3']).squeeze()
@@ -46,7 +43,7 @@ num_label_list = [0,1,2]                                      #list of manually 
 text_label_list = ['test', 'procedure', 'note']                #list of descriptive label types
 label_dict = dict(zip(num_label_list, text_label_list))
 state=-1
-print ('state=', state, "test3")    
+print ('state=', state, "test0")    
 
 
 #print ('label+dict', label_dict)
@@ -80,12 +77,15 @@ def sort_docs(doc_dict):
 def homepage():
     return render_template("main1.html");
 state=0
-print ('state=', state, "test3")
+print ('state=', state, "test1")
 
 @app.route("/get")
 def get_bot_response():
-    state=1
-    print ('state=', state, "test3")
+    global state
+    global doc_dict
+    global file_of_docs
+    global file_count, list_of_files
+    print ('state=', state, "test2")
     
     userText = request.args.get('msg')
     if state == 1:
@@ -262,8 +262,8 @@ def get_bot_response():
             return str(userText+" is not a valid selection from above")+" state="+str(state)
 
 
-#if __name__ == "__main__":
-    #app.run()
+if __name__ == "__main__":
+    app.run()
     #port = int(os.environ.get("PORT", 5000)) - suggested port changes from online
     #app.run(host="0.0.0.0", port=port)
     # - original
