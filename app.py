@@ -75,7 +75,7 @@ def sort_docs(doc_dict):
 def homepage():
     return render_template("main1.html");
 state=0
-print ('state=', state, "test0")
+print ('state=', state, "test1")
 
 @app.route("/get")
 def get_bot_response():
@@ -257,7 +257,11 @@ def get_bot_response():
             #return str(chat.chat(userText))+" state="+str(state)
             return str(userText+" is not a valid selection from above")+" state="+str(state)
 
-if __name__ == "__main__":
+def main():                                    # added this because main not found
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-    #app.run()
+if __name__ == "__main__":
+    main()
+    #port = int(os.environ.get("PORT", 5000)) - suggested port changes from online
+    #app.run(host="0.0.0.0", port=port)
+    #app.run() - original
