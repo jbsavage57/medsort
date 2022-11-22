@@ -261,10 +261,9 @@ def get_bot_response():
             #return str(chat.chat(userText))+" state="+str(state)
             return str(userText+" is not a valid selection from above")+" state="+str(state)
 
-def main():                                    # added this because main not found
-    app.run()
-if __name__ == "__main__":
-    main()
+
+#if __name__ == "__main__":
+    #app.run()
     #port = int(os.environ.get("PORT", 5000)) - suggested port changes from online
     #app.run(host="0.0.0.0", port=port)
     # - original
