@@ -46,9 +46,10 @@ text_label_list = ['test', 'procedure', 'note']                #list of descript
 label_dict = dict(zip(num_label_list, text_label_list))
 state=-1
 print ('state=', state, "test0")
-
+global list_of_docs
+list_of_docs=[]
 Local = False
-global conn_dict, local_dict, heroku_dict    
+global conn_dict #, local_dict, heroku_dict    
 local_dict = {"user":"postgres",
 "password":"Mm033062!",
 "host":"127.0.0.1",
@@ -78,7 +79,7 @@ if Local:
     conn_dict = local_dict
 else:
     conn_dict = heroku_dict
-def get_data_sql(index, column):
+def get_data_sql(table, index, column, select_column):
     global conn_dict
     try:
         connection = psycopg2.connect(
@@ -89,7 +90,8 @@ def get_data_sql(index, column):
             database=conn_dict["database"])
         cursor = connection.cursor()  
         print("Using Python variable in PostgreSQL select Query")
-        postgreSQL_select_Query = "select "+column+" from mts where index = " + str(index)
+        postgreSQL_select_Query = "select "+column+" from "+table\
+         +" where "+select_column+" = "+ str(index)
         print (postgreSQL_select_Query)
         cursor.execute(postgreSQL_select_Query)
         data = cursor.fetchall()
@@ -143,15 +145,19 @@ def set_data_sql(index, column, data):
     return data
 def get_note_sql(index):
     column = "note"
+    select_column = "index"
     index = index
-    return get_data_sql(index, column)
+    table = "mts"
+    return get_data_sql(table, index, column, select_column)
 
 
 #def get_label_sql(index): return label from postgresql
 def get_label_sql(index):
     column = "type"
+    select_column = "index"
     index = index
-    return get_data_sql(index, column)
+    table = "mts"
+    return get_data_sql(table, index, column, select_column)
 
 # get_index(filename): retruns index in postgresql corresponding to transcription
 def get_index(filename):
@@ -174,8 +180,10 @@ def add_note_sql(index, note):
 #    def transcript_from_sql(index): returns transcript from postgresql table mts at index
 def transcript_from_sql(index):
     column = "transcription"
+    select_column = "index"
     index = index
-    return get_data_sql(index, column)
+    table = "mts"
+    return get_data_sql(table, index, column, select_column)
 
 # returns transcript form file named filename, from postgres table mts row with index if filename as transcript N, where N is 0-4999
 def get_transcript(filename, file=True):
@@ -245,8 +253,8 @@ print ('state=', state, "test1")
 def get_bot_response():
     global state, File
     global doc_dict, doc_ordered
-    global file_of_docs, list_of_docs, list_name
-    global file_count, list_of_files
+    global file_of_docs, list_name, list_of_docs
+    global file_count# , list_of_files
     
     print ('state=', state, "test2")
     # Local = True
@@ -343,11 +351,11 @@ def get_bot_response():
         state = 2
         nonfile_list =[]
         file_list=[]
-        f = open(docs_file, 'r')
-        files_list = f.read()
-        files_list= files_list.split(',')
-        f.close()
         if File:
+            f = open(docs_file, 'r')
+            files_list = f.read()
+            files_list= files_list.split(',')
+            f.close()
             docs = open(file_of_docs,'r')
             doc_dict=json.load(docs)
            
@@ -372,10 +380,19 @@ def get_bot_response():
             else:                        
                 return str(docs_file+' not found')
         else:
+            table = "tran_list"
+            column = "t_list"
+            select_column = "list_name"
+            index = "'transcription_list'"
+            files_list = get_data_sql(table, index, column, select_column)
+            print ("files list=", files_list)
+            if files_list == -1: 
+                return str("Files list could not be read")    
+            files_list= files_list.split(',')
+
             for doc in files_list:
                 doc=doc.strip()
-                print ("doc: ", doc)
-                print (files_list)
+                #print ("doc: ", doc, "files list=", files_list)
                 text = get_transcript(doc, file=File)
                 if text ==-1:
                     nonfile_list.append(doc)
@@ -438,8 +455,8 @@ def get_bot_response():
                     json.dump(doc_ordered, docs, indent="")
                     docs.close()
                 else:
-                    list_ordered = sort_list(list_of_files)
-                    for key in list_ordered:
+                    list_of_docs = sort_list(list_of_files)
+                    for key in list_of_docs:
                         filename = key
                         index=get_index(filename)
                         label = get_label_sql(index)
@@ -468,10 +485,7 @@ def get_bot_response():
                     docs = open(file_of_docs,'r')
                     doc_ordered = json.load(docs, object_pairs_hook=OrderedDict)
                     docs.close()
-                    list_of_files = list(doc_ordered.keys())
-                else:
-
-                    list_of_files = sort_list(list_of_docs)
+                    list_of_docs = list(doc_ordered.keys())
                 #print (file_count, len(list_of_files), 1)
                 #print (doc_ordered)
             else:
@@ -483,13 +497,13 @@ def get_bot_response():
                 data_list = list(doc_ordered[list_of_files[file_count]])
                 data_list.append(note)
             else:
-                filename = list_of_files[file_count]
+                filename = list_of_docs[file_count]
                 index = get_index(filename)
                 note = add_note_sql(index, note)
                 #print ("index=",index,"note=",note)       
             file_count+=1
             #print (file_count, len(list_of_files), 3)
-            if file_count>= len(list_of_files):
+            if file_count>= len(list_of_docs):
                 state=2
                 if File:
                     docs = open(file_of_docs,'w')
@@ -498,7 +512,7 @@ def get_bot_response():
                 
                 return str('No more files to review')
 
-        key = list_of_files[file_count]
+        key = list_of_docs[file_count]
         if File:
             label = doc_dict[key][0]
             text = doc_dict[key][1]
@@ -512,7 +526,8 @@ def get_bot_response():
 
     if state == 9:
         if userText == 'q':
-            exit()
+            list_of_docs = []
+            return str("work list is cleared, you may restart or leave")
         else:
             state =2
             return str("Continue, make selection")
@@ -547,7 +562,7 @@ def get_bot_response():
             else:
                 return str("The documents in file of documents will be labelled with Note, test, or procedure.<br>"+
                 "The file, label, and initial text will be displayed.<br>"+
-                "files are in: "+list_name+"<br>"
+                "data is in: postgrew table mts"+"<br>"
                 +"Type label to label files, any other entry will abort labelling transcripts")
         if userText == '6':
             state=7
@@ -573,25 +588,28 @@ def get_bot_response():
                     file_string += "<br>" 
                 file_string += "Type q to quit; otherwise continue"
             else:
-                maxlen_key = len(max(list_of_files, key=len))
-                space=maxlen_key-4
-                file_string = "Your files are as follows:"+"<br>"+ \
+                try:
+                    maxlen_key = len(max(list_of_docs, key=len))
+                    space=maxlen_key-4
+                    file_string = "Your files are as follows:"+"<br>"+ \
                         "file "+"&nbsp"*space+" label "+"&nbsp"*3+" initial text"\
-                        +"&nbsp"*21+"notation"+"<br>"
+                        +"&nbsp"*36+"notation"+"<br>"
                         #"file '|' label '|' initial text'"+"&nbsp"*17+ "'|' notation"+"<br>"
-                for doc in list_of_files:
+                except ValueError:
+                    file_string = "File list is empty, please select files if desired"+"<br>"
+                for doc in list_of_docs:
                     index = get_index(doc)
                     label = get_label_sql(index)
                     note = get_note_sql(index)
                     text = transcript_from_sql(index)
                     space=maxlen_key+1-len(doc)
                     space2=10-len(label)
-                    space3=34-len(text[:30])
+                    space3=49-len(text[:45])
                     file_string+=doc+" "+"&nbsp"*space+label+"&nbsp"*space2+ \
-                        text[:30]+"&nbsp"*space3+note[:30]+"<br>"
-                    #file_string += doc+" | "+label[:10]+" | "+text[:30]+" | "+note[:30]
+                        text[:45]+"&nbsp"*space3+note[:30]+"<br>"
+                    #file_string += doc+" | "+label[:10]+" | "+text[:30]+" | "+note[:40]
                     file_string += "<br>" 
-                file_string += "Type q to quit; otherwise continue"
+                file_string += "Type q to quit and clear list; otherwise continue"
             return str(file_string)
 
         else:
