@@ -47,7 +47,7 @@ label_dict = dict(zip(num_label_list, text_label_list))
 state=-1
 print ('state=', state, "test0")
 
-Local = True
+Local = False
 global conn_dict, local_dict, heroku_dict    
 local_dict = {"user":"postgres",
 "password":"Mm033062!",
