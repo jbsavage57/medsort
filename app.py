@@ -256,7 +256,7 @@ def get_bot_response():
     global file_of_docs, list_name, list_of_docs
     global file_count# , list_of_files
     
-    print ('state=', state, "test2")
+    
     # Local = True
     # local_dict = {"user":"postgres",
     # "password":"Mm033062!",
@@ -276,6 +276,7 @@ def get_bot_response():
     #     conn_dict = heroku_dict
 
     userText = request.args.get('msg')
+    print ('state=', state, "userText=", userText)
     if state == 1:      #enter storage name for doc names
         state = 2
         if File:        #will work with file system
@@ -347,6 +348,7 @@ def get_bot_response():
     
     
     elif state == 4: #enter list of files
+        print ("entered list of files")
         docs_file = userText
         state = 2
         nonfile_list =[]
@@ -527,7 +529,8 @@ def get_bot_response():
     if state == 9:
         if userText == 'q':
             list_of_docs = []
-            return str("work list is cleared, you may restart or leave")
+            return str("work list is cleared, you may restart or leave"+"<br>"\
+                +"Choose item from menu above or exit site")
         else:
             state =2
             return str("Continue, make selection")
@@ -615,8 +618,7 @@ def get_bot_response():
 
         else:
             state=2
-            #chat = Chat_T()
-            #return str(chat.chat(userText))+" state="+str(state)
+            print ('invalid userText=', userText)
             return str(userText+" is not a valid selection from above")
 
 
