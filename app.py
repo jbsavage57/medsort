@@ -96,10 +96,10 @@ def get_data_sql(table, index, column, select_column):
             port=conn_dict["port"],
             database=conn_dict["database"])
         cursor = connection.cursor()  
-        print("Using Python variable in PostgreSQL select Query")
+        #print("Using Python variable in PostgreSQL select Query")
         postgreSQL_select_Query = "select "+column+" from "+table\
          +" where "+select_column+" = "+ str(index)
-        print (postgreSQL_select_Query)
+        #print (postgreSQL_select_Query)
         cursor.execute(postgreSQL_select_Query)
         data = cursor.fetchall()
         #print ("data", type(data), data, "\n"*2)
@@ -113,7 +113,7 @@ def get_data_sql(table, index, column, select_column):
         if connection:
             cursor.close()
             connection.close()
-            print("PostgreSQL connection is closed")
+            #print("PostgreSQL connection is closed")
     #print ("testsql",index, type(label), label, "\n"*2)
     return data
 
@@ -128,14 +128,14 @@ def set_data_sql(index, column, data):
             database=conn_dict["database"])
         cursor = connection.cursor()
         
-        print("Using Python variable in PostgreSQL select Query")
+        #print("Using Python variable in PostgreSQL select Query")
         postgreSQL_select_Query = "UPDATE mts SET "+column+" = " + "'"+data+"'" + " WHERE index = " + str(index)
-        print (postgreSQL_select_Query)
+        #print (postgreSQL_select_Query)
         cursor.execute(postgreSQL_select_Query)
         connection.commit()
         postgreSQL_select_Query = "SELECT "+column+" FROM mts WHERE index = " + str(index)
         cursor.execute(postgreSQL_select_Query)
-        print (postgreSQL_select_Query)
+        #print (postgreSQL_select_Query)
         data = cursor.fetchall()
         #print ("query label", label)
         data = data[0][0]
@@ -148,7 +148,7 @@ def set_data_sql(index, column, data):
         if connection:
             cursor.close()
             connection.close()
-            print("PostgreSQL connection is closed")
+            #print("PostgreSQL connection is closed")
     return data
 def get_note_sql(index):
     column = "note"
@@ -415,8 +415,7 @@ def get_bot_response():
                     list_of_docs.append(doc)  
         return str("Files added: "+" ".join(file_list)+"<br>"
                     "Files not found: " +" ".join(nonfile_list)+"<br>"\
-                    +"Enter item from menu above"
-                        +"<br>"+"Enter item from menu above")                   
+                    +"Enter item from menu above")                   
             
     elif state == 5:
         state=2
