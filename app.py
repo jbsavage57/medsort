@@ -596,6 +596,7 @@ def get_bot_response():
                         +"&nbsp"*36+"notation"+"<br>"
                         #"file '|' label '|' initial text'"+"&nbsp"*17+ "'|' notation"+"<br>"
                 except ValueError:
+                    print ("list_of_docs: ",list_of_docs)
                     file_string = "File list is empty, please select files if desired"+"<br>"
                 for doc in list_of_docs:
                     index = get_index(doc)
@@ -609,7 +610,7 @@ def get_bot_response():
                         text[:45]+"&nbsp"*space3+note[:30]+"<br>"
                     #file_string += doc+" | "+label[:10]+" | "+text[:30]+" | "+note[:40]
                     file_string += "<br>" 
-                file_string += "Type q to quit and clear list; otherwise continue"
+                file_string += "Type q to quit and clear list; any other entry will continue"
             return str(file_string)
 
         else:
