@@ -44,9 +44,16 @@ maxind_fixed=pd.DataFrame(data=np.array([1,2,0]), index=['Topic 1', 'Topic 2', '
 num_label_list = [0,1,2]                                      #list of manually added label types
 text_label_list = ['test', 'procedure', 'note']                #list of descriptive label types
 label_dict = dict(zip(num_label_list, text_label_list))
+
+
+global list_of_docs
+global state, File
+global doc_dict, doc_ordered
+global file_of_docs, list_name, list_of_docs
+global file_count# , list_of_files
+global conn_dict
 state=-1
 print ('state=', state, "test0")
-global list_of_docs
 list_of_docs=[]
 Local = False
 global conn_dict #, local_dict, heroku_dict    
@@ -111,7 +118,7 @@ def get_data_sql(table, index, column, select_column):
     return data
 
 def set_data_sql(index, column, data):
-    global conn_dict
+    
     try:
         connection = psycopg2.connect(
             user=conn_dict["user"],
@@ -309,7 +316,8 @@ def get_bot_response():
             try:
                 if len(list_of_docs) == 0:
                     globals()[list_name] = list_of_docs
-                    return str("List "+list_name+" exists but contains no transcripts")   
+                    return str("List "+list_name+" exists but contains no transcripts"
+                    +"<br>"+"Enter item from menu above")   
                 key_string = ""
                 for key in list_of_docs:
                         key_string+=key+"<br>"
@@ -320,8 +328,8 @@ def get_bot_response():
             except NameError:
                 list_of_docs = []
                 globals()[list_name] = list_of_docs
-                return str("File list to save transcript names: "+list_name)
-
+                return str("File list to save transcript names: "+list_name
+                    +"<br>"+"Enter item from menu above")
     elif state == 3:       #enter single file name save doc
         filename = userText
         filename = filename.strip()
@@ -333,7 +341,8 @@ def get_bot_response():
             try:
                 docs = open(file_of_docs,'r')
             except FileNotFoundError:
-                return str("No file to store transcripts found, return to step 1")
+                return str("No file to store transcripts found, return to step 1"
+                    +"<br>"+"Enter item from menu above")
             try:
                 doc_dict=json.load(docs)    
             except ValueError:
@@ -344,7 +353,8 @@ def get_bot_response():
             docs.close()
         else:
             list_of_docs.append(filename) 
-        return str('Added '+filename+'<br>'+"text:"+"<br>"+text)
+        return str('Added '+filename+'<br>'+"text:"+"<br>"+text
+            +"<br>"+"Enter item from menu above")
     
     
     elif state == 4: #enter list of files
@@ -380,7 +390,8 @@ def get_bot_response():
                 #return str("Files added: "+" ".join(file_list)+
                 #    "Files not found: " +" ".join(nonfile_list)) 
             else:                        
-                return str(docs_file+' not found')
+                return str(docs_file+' not found'
+                    +"<br>"+"Enter item from menu above")
         else:
             table = "tran_list"
             column = "t_list"
@@ -389,7 +400,8 @@ def get_bot_response():
             files_list = get_data_sql(table, index, column, select_column)
             print ("files list=", files_list)
             if files_list == -1: 
-                return str("Files list could not be read")    
+                return str("Files list could not be read"
+                 +"<br>"+"Enter item from menu above")    
             files_list= files_list.split(',')
 
             for doc in files_list:
@@ -402,14 +414,18 @@ def get_bot_response():
                     file_list.append(doc)
                     list_of_docs.append(doc)  
         return str("Files added: "+" ".join(file_list)+"<br>"
-                    "Files not found: " +" ".join(nonfile_list))                   
+                    "Files not found: " +" ".join(nonfile_list)+"<br>"\
+                    +"Enter item from menu above"
+                        +"<br>"+"Enter item from menu above")                   
             
     elif state == 5:
         state=2
         if File:
-            return str("The file holding your documents, "+str(Path(file_of_docs).absolute())+" has been closed.")
+            return str("The file holding your documents, "+str(Path(file_of_docs).absolute())+" has been closed."
+                +"<br>"+"Enter item from menu above")
         else:
-            return str("The list of transcripts, "+list_name+" has been closed.")
+            return str("The list of transcripts, "+list_name+" has been closed."
+                +"<br>"+"Enter item from menu above")
     elif state == 6:
         print ("File=", File)
         state=2
@@ -471,12 +487,15 @@ def get_bot_response():
                     
             
                 return str("Files with type and initial text" +"<br>"
-                    +key_string) 
+                    +key_string+"<br>"
+                    +"Enter item from menu above") 
             else:   
-                return str("Labeling of files was aborted, no list of files to label found")
+                return str("Labeling of files was aborted, no list of files to label found"
+                    +"<br>"+"Enter item from menu above")
             
         else:
-            return str("Labeling of files was aborted, no files were labeled")
+            return str("Labeling of files was aborted, no files were labeled"
+                +"<br>"+"Enter item from menu above")
     elif state == 7 or state == 8:
         print ("File=", File)
         if state == 7:
@@ -492,7 +511,8 @@ def get_bot_response():
                 #print (doc_ordered)
             else:
                 state = 2
-                return str("Review aborted")
+                return str("Review aborted"
+                    +"<br>"+"Enter item from menu above")
         else:
             note = userText
             if File:
@@ -512,8 +532,8 @@ def get_bot_response():
                     json.dump(doc_ordered, docs, indent="")
                     docs.close()
                 
-                return str('No more files to review')
-
+                return str('No more files to review'
+                    +"<br>"+"Enter item from menu above")
         key = list_of_docs[file_count]
         if File:
             label = doc_dict[key][0]
@@ -524,16 +544,17 @@ def get_bot_response():
             label = get_label_sql(index)
             text =  get_transcript(key, file=File)   
         key_string = "File: "+ key + "  Document type: "+label+" Document: "+"<br>"
-        return str(key_string+text+"<br>"+"Enter notes")
+        return str(key_string+text+"<br>"+"Enter notes"
+            +"<br>"+"Enter item from menu above")
 
-    if state == 9:
+    elif state == 9:
         if userText == 'q':
             list_of_docs = []
             return str("work list is cleared, you may restart or leave"+"<br>"\
                 +"Choose item from menu above or exit site")
         else:
             state =2
-            return str("Continue, make selection")
+            return str("Continue, enter item from menu above")
 
 
     else:
