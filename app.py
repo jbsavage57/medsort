@@ -258,6 +258,7 @@ print ('state=', state, "test1")
 
 @app.route("/get")
 def get_bot_response():
+    userText = request.args.get('msg')
     global state, File
     global doc_dict, doc_ordered
     global file_of_docs, list_name, list_of_docs
@@ -282,7 +283,7 @@ def get_bot_response():
     # else:
     #     conn_dict = heroku_dict
 
-    userText = request.args.get('msg')
+    
     print ('state=', state, "userText=", userText)
     if state == 1:      #enter storage name for doc names
         state = 2
@@ -543,8 +544,7 @@ def get_bot_response():
             label = get_label_sql(index)
             text =  get_transcript(key, file=File)   
         key_string = "File: "+ key + "  Document type: "+label+" Document: "+"<br>"
-        return str(key_string+text+"<br>"+"Enter notes"
-            +"<br>"+"Enter item from menu above")
+        return str(key_string+text+"<br>"+"Enter notes")
 
     elif state == 9:
         if userText == 'q':
