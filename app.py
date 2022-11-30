@@ -51,12 +51,13 @@ global doc_dict, doc_ordered
 global file_of_docs, list_name, list_of_docs
 global file_count# , list_of_files
 global conn_dict
-state=-1
-print ('state=', state, "test0")
-list_of_docs=[]
-Local = False
+#data.state=-1
+#print ('data.state=', data.state, "test0")
+#list_of_docs=[] --------------
+
 File = False
-state = 0
+Local = False
+#data.state = 0
 global conn_dict #, local_dict, heroku_dict    
 local_dict = {"user":"postgres",
 "password":"Mm033062!",
@@ -69,6 +70,10 @@ heroku_dict = {"user":"tdxakwnpoqnwuc",
 "host":"ec2-3-211-221-185.compute-1.amazonaws.com",
 "port":"5432",
 "database":"d3n8eqim2b6sc9"}
+
+
+
+
 
 if Local:
     conn_dict = local_dict
@@ -248,22 +253,19 @@ def sort_docs(doc_dict):
         if doc_list[0] == 'note':
             doc_ordered[key]=doc_dict[key]
     return doc_ordered
-
-@app.route("/")
-def homepage():
-    return render_template("main.html");
-
-File = False
-state = 0
+class dataStore():
+    data = 0
+    #Local = False
+    #File = False
+data = dataStore()
 
 
-@app.route("/get" )
-def get_bot_response():
-    userText = request.args.get('msg')
+def process_msg(userText):
+    #userText = request.args.get('msg')
     global doc_dict, doc_ordered
     global file_of_docs, list_name, list_of_docs
     global file_count# , list_of_files
-    global  File, state
+    global  File#, data _____________________
     # Local = True
     # local_dict = {"user":"postgres",
     # "password":"Mm033062!",
@@ -283,9 +285,9 @@ def get_bot_response():
     #     conn_dict = heroku_dict
 
     
-    print ('state1=', state, "userText=", userText)
-    if state == 1:      #enter storage name for doc names
-        state = 2
+    print ('data.state1=', data.state, "userText=", userText)
+    if data.state == 1:      #enter storage name for doc names
+        data.state = 2
         if File:        #will work with file system
             file_of_docs = userText
             doc_dict={}
@@ -300,7 +302,7 @@ def get_bot_response():
                     for key in doc_dict.keys():
                         key_string+=key+"<br>"
                     return str("File exists and name store documents is:" 
-                        +file_of_docs+" state="+str(state)+" and contains: "
+                        +file_of_docs + "and contains: "
                             +"<br>"+key_string) 
                 except ValueError:
                     return str("File exists but contains no files")
@@ -330,10 +332,10 @@ def get_bot_response():
                 globals()[list_name] = list_of_docs
                 return str("File list to save transcript names: "+list_name
                     +"<br>"+"Enter item from menu above")
-    elif state == 3:       #enter single file name save doc
+    elif data.state == 3:       #enter single file name save doc
         filename = userText
         filename = filename.strip()
-        state = 2
+        data.state = 2
         text = get_transcript(filename, file=File)
         if text == -1:
             return str(filename + ' not found')
@@ -357,10 +359,10 @@ def get_bot_response():
             +"<br>"+"Enter item from menu above")
     
     
-    elif state == 4: #enter list of files
+    elif data.state == 4: #enter list of files
         print ("entered list of files")
         docs_file = userText
-        state = 2
+        data.state = 2
         nonfile_list =[]
         file_list=[]
         if File:
@@ -417,17 +419,17 @@ def get_bot_response():
                     "Files not found: " +" ".join(nonfile_list)+"<br>"\
                     +"Enter item from menu above")                   
             
-    elif state == 5:
-        state=2
+    elif data.state == 5:
+        data.state=2
         if File:
             return str("The file holding your documents, "+str(Path(file_of_docs).absolute())+" has been closed."
                 +"<br>"+"Enter item from menu above")
         else:
             return str("The list of transcripts, "+list_name+" has been closed."
                 +"<br>"+"Enter item from menu above")
-    elif state == 6:
+    elif data.state == 6:
         print ("File=", File)
-        state=2
+        data.state=2
         if userText == 'label':
             if File:
                 docs = open(file_of_docs,'r')
@@ -495,11 +497,11 @@ def get_bot_response():
         else:
             return str("Labeling of files was aborted, no files were labeled"
                 +"<br>"+"Enter item from menu above")
-    elif state == 7 or state == 8:
+    elif data.state == 7 or data.state == 8:
         print ("File=", File)
-        if state == 7:
+        if data.state == 7:
             if userText == 'review':
-                state = 8
+                data.state = 8
                 file_count = 0
                 if File:
                     docs = open(file_of_docs,'r')
@@ -509,7 +511,7 @@ def get_bot_response():
                 #print (file_count, len(list_of_files), 1)
                 #print (doc_ordered)
             else:
-                state = 2
+                data.state = 2
                 return str("Review aborted"
                     +"<br>"+"Enter item from menu above")
         else:
@@ -525,7 +527,7 @@ def get_bot_response():
             file_count+=1
             #print (file_count, len(list_of_files), 3)
             if file_count>= len(list_of_docs):
-                state=2
+                data.state=2
                 if File:
                     docs = open(file_of_docs,'w')
                     json.dump(doc_ordered, docs, indent="")
@@ -545,8 +547,8 @@ def get_bot_response():
         key_string = "File: "+ key + "  Document type: "+label+" Document: "+"<br>"
         return str(key_string+text+"<br>"+"Enter notes")
 
-    elif state == 9:
-        state =2
+    elif data.state == 9:
+        data.state =2
 
         if userText == 'q':
             list_of_docs = []
@@ -559,30 +561,30 @@ def get_bot_response():
 
     else:
         if userText == '1':
-            state=1
-            print ('state2=', state, "userText=", userText)
+            data.state=1
+            print ('data.state2=', data.state, "userText=", userText)
             if File:
                 return str("Enter file name of file to store documents(.json)")   
             else:
                 return str("Enter name of list to store transcription names")
         if userText == '2':
-            state=3
-            print ('state2=', state, "userText=", userText)
+            data.state=3
+            print ('data.state2=', data.state, "userText=", userText)
             return str("Enter file name of the document")  
         if userText == '3':
-            state=4
-            print ('state2=', state, "userText=", userText)
+            data.state=4
+            print ('data.state2=', data.state, "userText=", userText)
             return str("Enter csv file of documents(.csv)")
         if userText == '4':
-            state=5
-            print ('state2=', state, "userText=", userText)
+            data.state=5
+            print ('data.state2=', data.state, "userText=", userText)
             return str("The file of documents will be closed it can be reopened to add documents<br>"+
                 "or it can be opened to sort and analyzed douments. It will be saved as:<br>"+
                 file_of_docs+" in path: " +str(Path(file_of_docs).absolute())+"<br>"
                 +"Type <close> to close file, any other entry will abort closing file")
         if userText == '5':
-            state=6
-            print ('state2=', state, "userText=", userText)
+            data.state=6
+            print ('data.state2=', data.state, "userText=", userText)
             if File:
                 return str("The documents in file of documents will be labelled with Note, test, or procedure.<br>"+
                 "The file, label, and initial text will be displayed.<br>"+
@@ -594,14 +596,14 @@ def get_bot_response():
                 "data is in: postgrew table mts"+"<br>"
                 +"Type label to label files, any other entry will abort labelling transcripts")
         if userText == '6':
-            state=7
-            print ('state2=', state, "userText=", userText)
+            data.state=7
+            print ('data.state2=', data.state, "userText=", userText)
             doc = 0
             return str("You can review each document in the file of documents and add a note"+"<br>"+
                 "Type review to review files, any other entry will abort reviewing transcripts")
         if userText == '7':
-            state=9
-            print ('state2=', state, "userText=", userText)
+            data.state=9
+            print ('data.state2=', data.state, "userText=", userText)
             if File:
                 doc = 0
                 docs = open(file_of_docs,'r')
@@ -644,10 +646,48 @@ def get_bot_response():
             return str(file_string)
 
         else:
-            state=2
-            print ('state2=', state, "userText=", userText)
+            data.state=2
+            print ('data.state2=', data.state, "userText=", userText)
             print ('invalid userText=', userText)
             return str(userText+" is not a valid selection from above")
+
+
+@app.route("/")
+def homepage():
+    return render_template("main.html");
+print ("test")
+#File = False   _________________
+data.state = 0
+#while data.state == 0:
+
+# class data.stateStore():
+#     data.state = 0
+
+# data = data.stateStore()
+
+# @app.route("/index")
+# def index():
+#     a=3
+#     b=4
+#     c=a+b
+#     data.a=a
+#     data.c=c
+#     return render_template("index.html",c=c)
+
+# @app.route("/dif")
+# def dif():
+#     d=data.c+data.a
+#     return render_template("dif.html",d=d)
+
+# if __name__ == "__main__":
+#     app.run(debug=True)
+
+@app.route("/get" )
+def get_bot_response():
+    userText = request.args.get('msg')
+    
+    return process_msg(userText)
+
 
 
 if __name__ == "__main__":
