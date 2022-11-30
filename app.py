@@ -55,6 +55,8 @@ state=-1
 print ('state=', state, "test0")
 list_of_docs=[]
 Local = False
+File = False
+state = 0
 global conn_dict #, local_dict, heroku_dict    
 local_dict = {"user":"postgres",
 "password":"Mm033062!",
