@@ -252,16 +252,16 @@ def homepage():
     return render_template("main.html");
 
 File = False
+state = 0
 
 
-
-@app.route("/get")
+@app.route("/get" )
 def get_bot_response():
     userText = request.args.get('msg')
     global doc_dict, doc_ordered
     global file_of_docs, list_name, list_of_docs
     global file_count# , list_of_files
-    global state, File
+    global  File, state
     # Local = True
     # local_dict = {"user":"postgres",
     # "password":"Mm033062!",
