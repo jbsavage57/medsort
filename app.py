@@ -600,7 +600,7 @@ def process_msg(userText):
             else:
                 return str("The documents in file of documents will be labelled with Note, test, or procedure.<br>"+
                 "The file, label, and initial text will be displayed.<br>"+
-                "data is in: postgrew table mts"+"<br>"
+                "data is in: postgresql table mts"+"<br>"
                 +"Type label to label files, any other entry will abort labelling transcripts")
         if userText == '6':
             data.state=7
