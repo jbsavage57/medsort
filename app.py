@@ -35,6 +35,7 @@ from nlp_project_final_3 import convert, convert_raw, normalize_corpus_num
 
 #class App:
 app = Flask(__name__)        #, template_folder='templates'
+lock = multiprocessing.Lock()
 lock.acquire()
 #set to enter data from Files
 
