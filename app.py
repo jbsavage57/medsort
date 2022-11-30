@@ -6,7 +6,8 @@ from collections import OrderedDict
 from pathlib import Path
 #import gcsfs
 #from gcsfs import GCSFS
-
+import multiprocessing
+lock = multiprocessing.Lock()
 
 import joblib
 import nltk
@@ -34,7 +35,8 @@ from nlp_project_final_3 import convert, convert_raw, normalize_corpus_num
 
 #class App:
 app = Flask(__name__)        #, template_folder='templates'
-#set to enter data form files
+lock.acquire()
+#set to enter data from Files
 
 vectorizer = joblib.load("vectorizer.jbl")
 nmf = joblib.load("nmf.jbl")
@@ -46,16 +48,16 @@ label_dict = dict(zip(num_label_list, text_label_list))
 
 
 global list_of_docs
-global state, File
+#global state, File
 global doc_dict, doc_ordered
 global file_of_docs, list_name, list_of_docs
 global file_count# , list_of_files
 global conn_dict
 #data.state=-1
 #print ('data.state=', data.state, "test0")
-#list_of_docs=[] --------------
+list_of_docs=[]
 
-File = False
+
 Local = False
 #data.state = 0
 global conn_dict #, local_dict, heroku_dict    
@@ -83,7 +85,7 @@ else:
 #def load_joblib(fs, bucket_name, file_name):
 #    with fs.open(f'{bucket_name}/{file_name}') as f:
 #        return joblib.load(f)
-#fs = gcsfs.GCSFileSystem(project='dsc590nlp-project')
+#fs = gcsfs.GCSfileSystem(project='dsc590nlp-project')
 #bucket_name = "dsc590nlp-project.appspot.com"
 #print (fs.ls(bucket_name))
 #vectorizer = load_joblib(fs, bucket_name, "vectorizer.jbl")
@@ -198,8 +200,8 @@ def transcript_from_sql(index):
     table = "mts"
     return get_data_sql(table, index, column, select_column)
 
-# returns transcript form file named filename, from postgres table mts row with index if filename as transcript N, where N is 0-4999
-def get_transcript(filename, file=True):
+# returns transcript form file named filename, from postgres table mts row with index if data.Filename as transcript N, where N is 0-4999
+def get_transcript(filename, File=True):
     doc=filename
     if File:
         if Path(doc).is_file():     
@@ -255,8 +257,9 @@ def sort_docs(doc_dict):
     return doc_ordered
 class dataStore():
     data = 0
+    File = False
     #Local = False
-    #File = False
+    #data.File = False
 data = dataStore()
 
 
@@ -265,7 +268,7 @@ def process_msg(userText):
     global doc_dict, doc_ordered
     global file_of_docs, list_name, list_of_docs
     global file_count# , list_of_files
-    global  File#, data _____________________
+    #, data _____________________
     # Local = True
     # local_dict = {"user":"postgres",
     # "password":"Mm033062!",
@@ -288,7 +291,7 @@ def process_msg(userText):
     print ('data.state1=', data.state, "userText=", userText)
     if data.state == 1:      #enter storage name for doc names
         data.state = 2
-        if File:        #will work with file system
+        if data.File:        #will work with file system
             file_of_docs = userText
             doc_dict={}
             if Path(file_of_docs).is_file():
@@ -301,18 +304,18 @@ def process_msg(userText):
                     key_string=""
                     for key in doc_dict.keys():
                         key_string+=key+"<br>"
-                    return str("File exists and name store documents is:" 
+                    return str("file exists and name store documents is:" 
                         +file_of_docs + "and contains: "
                             +"<br>"+key_string) 
                 except ValueError:
-                    return str("File exists but contains no files")
+                    return str("file exists but contains no files")
             else:
                 
                 doc_dict={}
                 docs = open(file_of_docs, 'w')
                 json.dump(doc_dict, docs, indent="")
                 docs.close()
-                return str("File name of file to store documents:"+file_of_docs)   
+                return str("file name of file to store documents:"+file_of_docs)   
         else:  #will work with postgresql
             list_name = userText
             try:
@@ -330,16 +333,16 @@ def process_msg(userText):
             except NameError:
                 list_of_docs = []
                 globals()[list_name] = list_of_docs
-                return str("File list to save transcript names: "+list_name
+                return str("file list to save transcript names: "+list_name
                     +"<br>"+"Enter item from menu above")
     elif data.state == 3:       #enter single file name save doc
         filename = userText
         filename = filename.strip()
         data.state = 2
-        text = get_transcript(filename, file=File)
+        text = get_transcript(filename, File=data.File)
         if text == -1:
             return str(filename + ' not found')
-        if File:    # save text if file, otherwise testin postgresql table
+        if data.File:    # save text if data.File, otherwise testin postgresql table
             try:
                 docs = open(file_of_docs,'r')
             except FileNotFoundError:
@@ -365,32 +368,32 @@ def process_msg(userText):
         data.state = 2
         nonfile_list =[]
         file_list=[]
-        if File:
+        if data.File:
             f = open(docs_file, 'r')
             files_list = f.read()
-            files_list= files_list.split(',')
+            files_list= data.Files_list.split(',')
             f.close()
             docs = open(file_of_docs,'r')
             doc_dict=json.load(docs)
            
-            if Path(docs_file).is_file():
+            if Path(docs_file).is_data.File():
                 f = open(docs_file, 'r')
                 files_list = f.read()
                 files_list= files_list.split(',')
                 for doc in files_list:
                     doc=doc.strip()
                     #print (doc)
-                    text = get_transcript(doc, file=File)
+                    text = get_transcript(doc, fFile=data.File)
                     if text ==-1:
-                        nonfile_list.append(doc)
+                        file_list.append(doc)
                     else:
                         file_list.append(doc)
                         doc_dict[doc]=text        
                 docs = open(file_of_docs, 'w')
                 json.dump(doc_dict, docs, indent="")
                 docs.close()
-                #return str("Files added: "+" ".join(file_list)+
-                #    "Files not found: " +" ".join(nonfile_list)) 
+                #return str("files added: "+" ".join(file_list)+
+                #    "files not found: " +" ".join(file_list)) 
             else:                        
                 return str(docs_file+' not found'
                     +"<br>"+"Enter item from menu above")
@@ -402,36 +405,35 @@ def process_msg(userText):
             files_list = get_data_sql(table, index, column, select_column)
             print ("files list=", files_list)
             if files_list == -1: 
-                return str("Files list could not be read"
+                return str("files list could not be read"
                  +"<br>"+"Enter item from menu above")    
             files_list= files_list.split(',')
 
             for doc in files_list:
                 doc=doc.strip()
                 #print ("doc: ", doc, "files list=", files_list)
-                text = get_transcript(doc, file=File)
+                text = get_transcript(doc, File=data.File)
                 if text ==-1:
                     nonfile_list.append(doc)
                 else:
                     file_list.append(doc)
                     list_of_docs.append(doc)  
-        return str("Files added: "+" ".join(file_list)+"<br>"
-                    "Files not found: " +" ".join(nonfile_list)+"<br>"\
+        return str("files added: "+" ".join(file_list)+"<br>"
+                    "data.Files not found: " +" ".join(nonfile_list)+"<br>"\
                     +"Enter item from menu above")                   
             
     elif data.state == 5:
         data.state=2
-        if File:
-            return str("The file holding your documents, "+str(Path(file_of_docs).absolute())+" has been closed."
+        if data.File:
+            return str("The data.File holding your documents, "+str(Path(file_of_docs).absolute())+" has been closed."
                 +"<br>"+"Enter item from menu above")
         else:
             return str("The list of transcripts, "+list_name+" has been closed."
                 +"<br>"+"Enter item from menu above")
     elif data.state == 6:
-        print ("File=", File)
         data.state=2
         if userText == 'label':
-            if File:
+            if data.File:
                 docs = open(file_of_docs,'r')
                 doc_dict=json.load(docs)
                 docs.close()
@@ -440,10 +442,10 @@ def process_msg(userText):
                 list_of_files = list_of_docs
             key_string = "file         label    initial text"+"<br>"
             maxlen_key=0
-            #print ("len(list_of_files)", len(list_of_files))
+            #print ("len(list_of_Files)", len(list_of_files))
             for key in list_of_files:
                 if len(key) > maxlen_key: maxlen_key = len(key)
-                if File:
+                if data.File:
                     if isinstance(doc_dict[key], list):
                         pass                        
                     else:
@@ -453,7 +455,7 @@ def process_msg(userText):
                         doc_dict[key] = [label, doc_dict[key]]
                 else:
                     filename = key
-                    text = get_transcript(filename, File)
+                    text = get_transcript(filename, File = data.File)
                     pd_pred_raw = convert_raw([text], nmf, vectorizer, maxind_fixed)
                     label = pd_pred_raw['pred_label'][0]
                     print ("label=", label, 'type:', type(label),text[:40])
@@ -464,7 +466,7 @@ def process_msg(userText):
             if len(list_of_files) > 0:
                 space = maxlen_key - 4
                 key_string = "file "+"&nbsp"*space+" label "+"&nbsp"*3+" initial text"+"<br>"
-                if File:
+                if data.File:
                     doc_ordered = sort_docs(doc_dict)
                     for key in doc_ordered.keys():
                         space=maxlen_key+2-len(key)
@@ -479,31 +481,30 @@ def process_msg(userText):
                         filename = key
                         index=get_index(filename)
                         label = get_label_sql(index)
-                        text = get_transcript(filename, File)
+                        text = get_transcript(filename, File=data.File)
                         space=maxlen_key+1-len(key)
                         space2=10-len(label)
                         key_string+=key+" "+"&nbsp"*space+label+"&nbsp"*space2+ text[:60]+"<br>"
-                        print ("filename:",filename,"index:",index,"label:",label,"\n")
+                        print ("ilename:",filename,"index:",index,"label:",label,"\n")
                         #print ("test: ", text)
                     
             
-                return str("Files with type and initial text" +"<br>"
+                return str("files with type and initial text" +"<br>"
                     +key_string+"<br>"
                     +"Enter item from menu above") 
             else:   
-                return str("Labeling of files was aborted, no list of files to label found"
+                return str("Labeling of files was aborted, no list of data.Files to label found"
                     +"<br>"+"Enter item from menu above")
             
         else:
             return str("Labeling of files was aborted, no files were labeled"
                 +"<br>"+"Enter item from menu above")
     elif data.state == 7 or data.state == 8:
-        print ("File=", File)
         if data.state == 7:
             if userText == 'review':
                 data.state = 8
                 file_count = 0
-                if File:
+                if data.File:
                     docs = open(file_of_docs,'r')
                     doc_ordered = json.load(docs, object_pairs_hook=OrderedDict)
                     docs.close()
@@ -516,7 +517,7 @@ def process_msg(userText):
                     +"<br>"+"Enter item from menu above")
         else:
             note = userText
-            if File:
+            if data.File:
                 data_list = list(doc_ordered[list_of_files[file_count]])
                 data_list.append(note)
             else:
@@ -528,7 +529,7 @@ def process_msg(userText):
             #print (file_count, len(list_of_files), 3)
             if file_count>= len(list_of_docs):
                 data.state=2
-                if File:
+                if data.File:
                     docs = open(file_of_docs,'w')
                     json.dump(doc_ordered, docs, indent="")
                     docs.close()
@@ -536,15 +537,15 @@ def process_msg(userText):
                 return str('No more files to review'
                     +"<br>"+"Enter item from menu above")
         key = list_of_docs[file_count]
-        if File:
+        if data.File:
             label = doc_dict[key][0]
             text = doc_dict[key][1]
         else:
             #print ("key=", key, "list_of_files: ", list_of_files, "file_count=",file_count )
             index = get_index(key)
             label = get_label_sql(index)
-            text =  get_transcript(key, file=File)   
-        key_string = "File: "+ key + "  Document type: "+label+" Document: "+"<br>"
+            text =  get_transcript(key, File=data.File)   
+        key_string = "data.File: "+ key + "  Document type: "+label+" Document: "+"<br>"
         return str(key_string+text+"<br>"+"Enter notes")
 
     elif data.state == 9:
@@ -564,7 +565,7 @@ def process_msg(userText):
         if userText == '1':
             data.state=1
             print ('data.state2=', data.state, "userText=", userText)
-            if File:
+            if data.File:
                 return str("Enter file name of file to store documents(.json)")   
             else:
                 return str("Enter name of list to store transcription names")
@@ -579,20 +580,20 @@ def process_msg(userText):
         if userText == '4':
             data.state=5
             print ('data.state2=', data.state, "userText=", userText)
-            if File:
+            if data.File:
                 return str("The file of documents will be closed it can be reopened to add documents<br>"+
                     "or it can be opened to sort and analyzed douments. It will be saved as:<br>"+
                     file_of_docs+" in path: " +str(Path(file_of_docs).absolute())+"<br>"
-                    +"Type <close> to close file, any other entry will abort closing file")
+                    +"Type <close> to close file, any other entry will abort closing data.File")
             else:
                 return str("The file of documents will be closed it can be reopened to add documents<br>"+
                     "or it can be opened to sort and analyzed douments. It will be saved as:<br>"+
                     list_of_docs+" in path: " +str(Path(file_of_docs).absolute())+"<br>"
-                    +"Type <close> to close file, any other entry will abort closing file")
+                    +"Type <close> to close file, any other entry will abort closing data.File")
         if userText == '5':
             data.state=6
             print ('data.state2=', data.state, "userText=", userText)
-            if File:
+            if data.File:
                 return str("The documents in file of documents will be labelled with Note, test, or procedure.<br>"+
                 "The file, label, and initial text will be displayed.<br>"+
                 "files are in: "+transcripts+" in path: " +str(Path(file_of_docs).absolute())+"<br>"
@@ -611,7 +612,7 @@ def process_msg(userText):
         if userText == '7':
             data.state=9
             print ('data.state2=', data.state, "userText=", userText)
-            if File:
+            if data.File:
                 doc = 0
                 docs = open(file_of_docs,'r')
                 doc_ordered = json.load(docs, object_pairs_hook=OrderedDict)
@@ -636,7 +637,7 @@ def process_msg(userText):
                         #"file '|' label '|' initial text'"+"&nbsp"*17+ "'|' notation"+"<br>"
                 except ValueError:
                     print ("list_of_docs: ",list_of_docs)
-                    file_string = "File list is empty, please select files if desired"+"<br>"
+                    file_string = "file list is empty, please select data.Files if desired"+"<br>"
                 for doc in list_of_docs:
                     index = get_index(doc)
                     label = get_label_sql(index)
@@ -657,8 +658,8 @@ def process_msg(userText):
             print ('data.state2=', data.state, "userText=", userText)
             print ('invalid userText=', userText)
             return str(userText+" is not a valid selection from above")
-
-
+    print ("should never get here**************")
+    lock.release()
 @app.route("/")
 def homepage():
     return render_template("main.html");
@@ -699,6 +700,7 @@ def get_bot_response():
 
 if __name__ == "__main__":
     app.run()
+    
     #port = int(os.environ.get("PORT", 5000)) - suggested port changes from online
     #app.run(host="0.0.0.0", port=port)
     # - original
