@@ -1,15 +1,14 @@
-#!/usr/bin/env python3.9.15
+#!/usr/bin/env python3.8.10
 # -*- coding: utf-8 -*-
 
 
 import pandas as pd                               #*************************************
 import numpy as np
-import contractions
+#import contractions
 #from pycontractions import Contractions
 #cont = Contractions(api_key="glove-twitter-100")
 import nltk
 import joblib
-
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 nltk.download('stopwords')
@@ -28,7 +27,7 @@ nltk.download('omw-1.4')
 
 '''   def normalize_corpus(corpus, text_lower_case=True, numeric=False,#*********************************************
                      text_lemmatization=True, text_stemmer=False, text_punct=True,
-                     stopword_removal=True, hyphen_space=True, fix_contractions=True):
+                     stopword_removal=True, hyphen_space=True, fix_contractions=False):
    
      arguments:
         corpus: list of documents
@@ -92,10 +91,10 @@ def normalize_corpus_num(corpus, text_lower_case=True, numeric=False,
             #doc = ' '.join(tokens)
         #print (3,doc)
         # remove contractions
-        if fix_contractions:
-          word_list =word_tokenize(doc)
+        #if fix_contractions:
+        #  word_list =word_tokenize(doc)
           #doc = ' '.join(cont.expand_texts(word_list))
-          doc = ' '.join([contractions.fix(w) for w in word_list])
+        #  doc = ' '.join([contractions.fix(w) for w in word_list])
         # lemmatize text
         if text_lemmatization:              # lemmatize if True
             word_list = word_tokenize(doc)
