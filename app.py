@@ -45,12 +45,12 @@ text_label_list = ['test', 'procedure', 'note']                #list of descript
 label_dict = dict(zip(num_label_list, text_label_list))
 
 
-# global list_of_docs
-# global state, File
-# global doc_dict, doc_ordered
-# global file_of_docs, list_name, list_of_docs
-# global file_count# , list_of_files
-# global conn_dict
+global list_of_docs
+global state, File
+global doc_dict, doc_ordered
+global file_of_docs, list_name, list_of_docs
+global file_count# , list_of_files
+global conn_dict
 state=-1
 print ('state=', state, "test0")
 list_of_docs=[]
@@ -546,12 +546,14 @@ def get_bot_response():
         return str(key_string+text+"<br>"+"Enter notes")
 
     elif state == 9:
+        state =2
+
         if userText == 'q':
             list_of_docs = []
             return str("work list is cleared, you may restart or leave"+"<br>"\
                 +"Choose item from menu above or exit site")
         else:
-            state =2
+            
             return str("Continue, enter item from menu above")
 
 
