@@ -250,9 +250,9 @@ def sort_docs(doc_dict):
 @app.route("/")
 def homepage():
     return render_template("main.html");
-state=0
+
 File = False
-print ('state=', state, "test1")
+
 
 
 @app.route("/get")
@@ -281,7 +281,7 @@ def get_bot_response():
     #     conn_dict = heroku_dict
 
     
-    print ('state=', state, "userText=", userText)
+    print ('state1=', state, "userText=", userText)
     if state == 1:      #enter storage name for doc names
         state = 2
         if File:        #will work with file system
@@ -556,25 +556,29 @@ def get_bot_response():
     else:
         if userText == '1':
             state=1
+            print ('state2=', state, "userText=", userText)
             if File:
                 return str("Enter file name of file to store documents(.json)")   
             else:
                 return str("Enter name of list to store transcription names")
         if userText == '2':
             state=3
+            print ('state2=', state, "userText=", userText)
             return str("Enter file name of the document")  
         if userText == '3':
             state=4
-            print ("state=", state, "userText=", userText)
+            print ('state2=', state, "userText=", userText)
             return str("Enter csv file of documents(.csv)")
         if userText == '4':
             state=5
+            print ('state2=', state, "userText=", userText)
             return str("The file of documents will be closed it can be reopened to add documents<br>"+
                 "or it can be opened to sort and analyzed douments. It will be saved as:<br>"+
                 file_of_docs+" in path: " +str(Path(file_of_docs).absolute())+"<br>"
                 +"Type <close> to close file, any other entry will abort closing file")
         if userText == '5':
             state=6
+            print ('state2=', state, "userText=", userText)
             if File:
                 return str("The documents in file of documents will be labelled with Note, test, or procedure.<br>"+
                 "The file, label, and initial text will be displayed.<br>"+
@@ -587,12 +591,13 @@ def get_bot_response():
                 +"Type label to label files, any other entry will abort labelling transcripts")
         if userText == '6':
             state=7
+            print ('state2=', state, "userText=", userText)
             doc = 0
             return str("You can review each document in the file of documents and add a note"+"<br>"+
                 "Type review to review files, any other entry will abort reviewing transcripts")
         if userText == '7':
             state=9
-            
+            print ('state2=', state, "userText=", userText)
             if File:
                 doc = 0
                 docs = open(file_of_docs,'r')
@@ -636,6 +641,7 @@ def get_bot_response():
 
         else:
             state=2
+            print ('state2=', state, "userText=", userText)
             print ('invalid userText=', userText)
             return str(userText+" is not a valid selection from above")
 
