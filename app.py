@@ -560,6 +560,7 @@ def process_msg(userText):
 
 
     else:
+        print ("Entering menu selection, state=", data.state)
         if userText == '1':
             data.state=1
             print ('data.state2=', data.state, "userText=", userText)
@@ -578,10 +579,16 @@ def process_msg(userText):
         if userText == '4':
             data.state=5
             print ('data.state2=', data.state, "userText=", userText)
-            return str("The file of documents will be closed it can be reopened to add documents<br>"+
-                "or it can be opened to sort and analyzed douments. It will be saved as:<br>"+
-                file_of_docs+" in path: " +str(Path(file_of_docs).absolute())+"<br>"
-                +"Type <close> to close file, any other entry will abort closing file")
+            if File:
+                return str("The file of documents will be closed it can be reopened to add documents<br>"+
+                    "or it can be opened to sort and analyzed douments. It will be saved as:<br>"+
+                    file_of_docs+" in path: " +str(Path(file_of_docs).absolute())+"<br>"
+                    +"Type <close> to close file, any other entry will abort closing file")
+            else:
+                return str("The file of documents will be closed it can be reopened to add documents<br>"+
+                    "or it can be opened to sort and analyzed douments. It will be saved as:<br>"+
+                    list_of_docs+" in path: " +str(Path(file_of_docs).absolute())+"<br>"
+                    +"Type <close> to close file, any other entry will abort closing file")
         if userText == '5':
             data.state=6
             print ('data.state2=', data.state, "userText=", userText)
@@ -685,7 +692,7 @@ data.state = 0
 @app.route("/get" )
 def get_bot_response():
     userText = request.args.get('msg')
-    
+    print ("New text input, userText=", userText)
     return process_msg(userText)
 
 
