@@ -8,7 +8,8 @@ from pathlib import Path
 #from gcsfs import GCSFS
 import multiprocessing
 lock = multiprocessing.Lock()
-
+import threading
+threadLock = threading.Lock()
 import joblib
 import nltk
 import numpy as np
@@ -37,6 +38,8 @@ from nlp_project_final_3 import convert, convert_raw, normalize_corpus_num
 app = Flask(__name__)        #, template_folder='templates'
 lock = multiprocessing.Lock()
 lock.acquire()
+threadLock = threading.Lock()
+threadLock.acquire()
 #set to enter data from Files
 
 vectorizer = joblib.load("vectorizer.jbl")
@@ -661,6 +664,7 @@ def process_msg(userText):
             return str(userText+" is not a valid selection from above")
     print ("should never get here**************")
     lock.release()
+    threadLock.release()
 @app.route("/")
 def homepage():
     return render_template("main.html");
