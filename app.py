@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.9.15 
+#!/usr/bin/env python3.8.10
 import os
 import csv
 import json
@@ -15,12 +15,11 @@ import pandas as pd  # *************************************
 from flask import Flask, render_template, request
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-
-nltk.download('stopwords')
-nltk.download('punkt')
 import re
 import string
 import psycopg2
+nltk.download('stopwords')
+nltk.download('punkt')
 
 from nltk.stem import PorterStemmer
 from nltk.tokenize import sent_tokenize, word_tokenize
@@ -258,15 +257,11 @@ print ('state=', state, "test1")
 
 @app.route("/get")
 def get_bot_response():
-    print ('state0=', state, "userText=", userText)
     userText = request.args.get('msg')
-    print ('state=1', state, "userText=", userText)
-    global state, File
     global doc_dict, doc_ordered
     global file_of_docs, list_name, list_of_docs
     global file_count# , list_of_files
-    print ('state2=', state, "userText=", userText)
-    
+    global state, File
     # Local = True
     # local_dict = {"user":"postgres",
     # "password":"Mm033062!",
@@ -570,7 +565,7 @@ def get_bot_response():
             return str("Enter file name of the document")  
         if userText == '3':
             state=4
-            print ("state=", state, 'userText == 3')
+            print ("state=", state, "userText=", userText)
             return str("Enter csv file of documents(.csv)")
         if userText == '4':
             state=5
