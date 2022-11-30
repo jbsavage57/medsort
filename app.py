@@ -260,7 +260,7 @@ def sort_docs(doc_dict):
             doc_ordered[key]=doc_dict[key]
     return doc_ordered
 class dataStore():
-    data = 0
+    k12 = 0
     File = False
     file_count = 0
     #Local = False
