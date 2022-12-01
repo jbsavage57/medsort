@@ -1,7 +1,19 @@
 <!DOCTYPE html>
 <html>
+
+<form action="{{ url_for("gfg")}}" method="post"></form>
+<label for="firstname">First Name:</label>
+<input type="text" id="firstname" name="fname" placeholder="firstname">
+<label for="lastname">Last Name:</label>
+<input type="text" id="lastname" name="lname" placeholder="lastname">
+<button type="submit">Login</button>
+
+<script scr="{{url_for('static', filename='main.js')}}"></script>
+  
+
 <title>Medical Document Sorter</title>
 <head>
+
 <link
 rel="shortcut icon"
 type="image/x-icon"
@@ -200,30 +212,39 @@ position:absolute;top:5%;left:5%;
 </div>
 <p id = "reflect" class="userText"><span> This is your response </span></p>
 <p id = "instruction" class="botText"><span> This is instruction data  </span></p>
-<script scr="{{url_for('static', filename='main.js')}}"></script>
 
+
+<script>
+function changeText(){
+  var element = document.getElementById("myPara");
+  element.innerHTML = "Hello World!";
+}
+</script>
 <script>  function 
 getBotResponse() {
     
     var rawText = $("#textInput").val();
-//11/30    var userHtml = '<p class="userText"><span>'+"l*l" + rawText + "</span></p>";
-// clears entry tab
+    var userHtml = '<p class="userText"><span>' + rawText + "</span></p>";
     $("#textInput").val("");
-//Menu entry
     document.getElementById("reflect").innerHTML = "<span style=userText>"+"Your entry: " + rawText+"</span>";
 //    $("#chatbox").append(userHtml);
-    document.getElementById("userInput");
+    document
+      
+      .getElementById("userInput");
  //     .scrollIntoView({ block: "start", behavior: "smooth" });
     $.get("/get", { msg: rawText }).done(function(data) {
  //     var botHtml = '<p class="botText">' + data + "</p>";
      
-//11/30      var botHtml = '<p class="botText"><span>' + "*****"+data + "</span></p>";
-//  Instructions output 
-document.getElementById("instruction").innerHTML = "<span style=botText>"+ data +"</span>";
+      var botHtml = '<p class="botText"><span>' + data + "</span></p>";
+      document.getElementById("instruction").innerHTML = "<span style=botText>"+ data +"</span>";
   //    $("#chatbox").botHtml;
  //     $("#chatbox").append(botHtml);
       
-      document.getElementById("userInput");
+      document
+      
+
+        
+        .getElementById("userInput");
   //      .scrollIntoView({ block: "start", behavior: "smooth" });
     });
   }
@@ -235,4 +256,5 @@ document.getElementById("instruction").innerHTML = "<span style=botText>"+ data 
 </script>
 </div>
 </body>
+
 </html>
