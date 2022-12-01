@@ -51,16 +51,6 @@ text_label_list = ['test', 'procedure', 'note']                #list of descript
 label_dict = dict(zip(num_label_list, text_label_list))
 
 
-#global list_of_docs
-#global k12, File
-#global doc_ordered #doc_dict
-#global file_of_docs list_name
-#global file_count# , list_of_files
-#global conn_dict
-#data.k12=-1
-#print ('data.k12=', data.k12, "test0")
-
-
 
 #Local = False
 #data.k12 = 0
@@ -274,29 +264,7 @@ data = dataStore()
 
 
 def process_msg(userText):
-    #userText = request.args.get('msg')
-    #global doc_ordered # doc_dict, 
-    #global file_of_docs   list_of_docs
-    #global file_count# , list_of_files
-    #, data _____________________
-    # Local = True
-    # local_dict = {"user":"postgres",
-    # "password":"Mm033062!",
-    # "host":"127.0.0.1",
-    # "port":"5432",
-    # "database":"postgres"}
-
-    # heroku_dict = {"user":"tdxakwnpoqnwuc",
-    # "password":"bcc66bdba6ede864c3306448b595a5bcfa852941bba973e578518149de8bf76b",
-    # "host":"ec2-3-211-221-185.compute-1.amazonaws.com",
-    # "port":"5432",
-    # "database":"d3n8eqim2b6sc9"}
-    # global local_dict, heroku_dict
-    # if Local:
-    #     conn_dict = local_dict
-    # else:
-    #     conn_dict = heroku_dict
-
+   
     
     print ('data.state1=', data.k12, "userText=", userText)
     if data.k12 == 1:      #enter storage name for doc names
@@ -678,36 +646,11 @@ def process_msg(userText):
 def homepage():
     return render_template("main.html");
 print ("test")
-#File = False   _________________
-
-#while data.k12 == 0:
-
-# class data.stateStore():
-#     data.k12 = 0
-
-# data = data.stateStore()
-
-# @app.route("/index")
-
-#     a=3
-#     b=4
-#     c=a+b
-#     data.a=a
-#     data.c=c
-#     return render_template("index.html",c=c)
-
-# @app.route("/dif")
-# def dif():
-#     d=data.c+data.a
-#     return render_template("dif.html",d=d)
-
-# if __name__ == "__main__":
-#     app.run(debug=True)
 
 @app.route("/get" )
 def get_bot_response():
     userText = request.args.get('msg')
-    print ("New text input, userText=", userText)
+    print ("New text input, userText=", userText,"k12-0=",k12)
     return process_msg(userText)
 
 
@@ -715,7 +658,3 @@ lock.release()
 threadLock.release()
 if __name__ == "__main__":
     app.run()
-    
-    #port = int(os.environ.get("PORT", 5000)) - suggested port changes from online
-    #app.run(host="0.0.0.0", port=port)
-    # - original
