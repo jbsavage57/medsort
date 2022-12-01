@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.8.10
 import os
-import csv
+#import csv
 import json
 from collections import OrderedDict
 from pathlib import Path
@@ -11,26 +11,26 @@ lock = multiprocessing.Lock()
 import threading
 threadLock = threading.Lock()
 import joblib
-import nltk
+#import nltk
 import numpy as np
 import pandas as pd  # *************************************
 from flask import Flask, render_template, request
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
+#from nltk.corpus import stopwords
+#from nltk.stem import WordNetLemmatizer
 import re
 import string
 import psycopg2
-nltk.download('stopwords')
-nltk.download('punkt')
+#nltk.download('stopwords')
+#nltk.download('punkt')
 
-from nltk.stem import PorterStemmer
-from nltk.tokenize import sent_tokenize, word_tokenize
-from sklearn.decomposition import NMF  # model is based on NMF
-from sklearn.feature_extraction.text import \
-    CountVectorizer  # Get count vectorizer
+#from nltk.stem import PorterStemmer
+#from nltk.tokenize import sent_tokenize, word_tokenize
+#from sklearn.decomposition import NMF  # model is based on NMF
+#from sklearn.feature_extraction.text import \
+#    CountVectorizer  # Get count vectorizer
 
-nltk.download('wordnet')
-nltk.download('omw-1.4')
+#nltk.download('wordnet')
+#nltk.download('omw-1.4')
 import nlp_project_final_3
 from nlp_project_final_3 import convert, convert_raw, normalize_corpus_num
 
