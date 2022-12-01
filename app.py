@@ -54,7 +54,7 @@ label_dict = dict(zip(num_label_list, text_label_list))
 #global list_of_docs
 #global k12, File
 global doc_dict, doc_ordered
-global file_of_docs, list_name
+global file_of_docs #list_name
 global file_count# , list_of_files
 global conn_dict
 #data.k12=-1
@@ -264,6 +264,7 @@ class dataStore():
     File = False
     file_count = 0
     list_of_docs = []
+    list_name = "list_of_docs"
     #Local = False
     #data.File = False
 data = dataStore()
@@ -272,7 +273,7 @@ data = dataStore()
 def process_msg(userText):
     #userText = request.args.get('msg')
     global doc_dict, doc_ordered
-    global file_of_docs, list_name # list_of_docs
+    global file_of_docs  # list_of_docs
     #global file_count# , list_of_files
     #, data _____________________
     # Local = True
@@ -323,23 +324,23 @@ def process_msg(userText):
                 docs.close()
                 return str("file name of file to store documents:"+file_of_docs)   
         else:  #will work with postgresql
-            list_name = userText
+            data.list_name = userText
             try:
                 if len(data.list_of_docs) == 0:
-                    globals()[list_name] = data.list_of_docs
-                    return str("List "+list_name+" exists but contains no transcripts"
+                    globals()[data.list_name] = data.list_of_docs
+                    return str("List "+data.list_name+" exists but contains no transcripts"
                     +"<br>"+"Enter item from menu above")   
                 key_string = ""
                 for key in data.list_of_docs:
                         key_string+=key+"<br>"
-                globals()[list_name] = data.list_of_docs
+                globals()[data.list_name] = data.list_of_docs
                 return str("List exists and is named:" 
                     +list_name+" and contains transcripts: "
                         +"<br>"+key_string) 
             except NameError:
                 data.list_of_docs = []
-                globals()[list_name] = data.list_of_docs
-                return str("file list to save transcript names: "+list_name
+                globals()[data.list_name] = data.list_of_docs
+                return str("file list to save transcript names: "+data.list_name
                     +"<br>"+"Enter item from menu above")
     elif data.k12 == 3:       #enter single file name save doc
         filename = userText
@@ -407,7 +408,9 @@ def process_msg(userText):
             table = "tran_list"
             column = "t_list"
             select_column = "list_name"
-            index = "'transcription_list'"
+            
+            index = "'"+docs_file.strip()+"'" # "'"+transcription_list+"'" 
+            print (index)
             files_list = get_data_sql(table, index, column, select_column)
             print ("files list=", files_list)
             if files_list == -1: 
@@ -434,7 +437,7 @@ def process_msg(userText):
             return str("The data.File holding your documents, "+str(Path(file_of_docs).absolute())+" has been closed."
                 +"<br>"+"Enter item from menu above")
         else:
-            return str("The list of transcripts, "+list_name+" has been closed."
+            return str("The list of transcripts, "+data.list_name+", has been closed."
                 +"<br>"+"Enter item from menu above")
     elif data.k12 == 6:
         data.k12=2
@@ -667,6 +670,8 @@ def process_msg(userText):
     print ("should never get here**************")
     lock.release()
     threadLock.release()
+
+
 @app.route("/")
 def homepage():
     return render_template("main.html");
@@ -681,7 +686,7 @@ print ("test")
 # data = data.stateStore()
 
 # @app.route("/index")
-# def index():
+
 #     a=3
 #     b=4
 #     c=a+b
