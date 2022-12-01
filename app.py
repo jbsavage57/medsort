@@ -53,18 +53,18 @@ label_dict = dict(zip(num_label_list, text_label_list))
 
 #global list_of_docs
 #global k12, File
-global doc_ordered #doc_dict
+#global doc_ordered #doc_dict
 #global file_of_docs list_name
-global file_count# , list_of_files
-global conn_dict
+#global file_count# , list_of_files
+#global conn_dict
 #data.k12=-1
 #print ('data.k12=', data.k12, "test0")
 
 
 
-Local = False
+#Local = False
 #data.k12 = 0
-global conn_dict #, local_dict, heroku_dict    
+#global conn_dict #, local_dict, heroku_dict    
 local_dict = {"user":"postgres",
 "password":"Mm033062!",
 "host":"127.0.0.1",
@@ -80,7 +80,7 @@ heroku_dict = {"user":"tdxakwnpoqnwuc",
 
 
 
-
+Local = True
 if Local:
     conn_dict = local_dict
 else:
@@ -98,8 +98,8 @@ if Local:
     conn_dict = local_dict
 else:
     conn_dict = heroku_dict
-def get_data_sql(table, index, column, select_column):
-    global conn_dict
+def get_data_sql(table, index, column, select_column, conn_dict=conn_dict):
+    #global conn_dict
     try:
         connection = psycopg2.connect(
             user=conn_dict["user"],
@@ -129,7 +129,7 @@ def get_data_sql(table, index, column, select_column):
     #print ("testsql",index, type(label), label, "\n"*2)
     return data
 
-def set_data_sql(index, column, data):
+def set_data_sql(index, column, data,conn_dict=conn_dict):
     
     try:
         connection = psycopg2.connect(
