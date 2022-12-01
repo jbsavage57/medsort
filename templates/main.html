@@ -210,9 +210,10 @@ getBotResponse() {
 // clears entry tab
     $("#textInput").val("");
 //Menu entry
-    document.getElementById("reflect").innerHTML = "<span style=userText>"+"Your entry: " + rawText+"</span>";
+    document.getElementById("reflect").innerHTML = "<span style=userText>"+"Your entry: 1" + rawText+"</span>";
 //    $("#chatbox").append(userHtml);
-    document.getElementById("userInput");
+//not used?
+//11/30    document.getElementById("userInput");
  //     .scrollIntoView({ block: "start", behavior: "smooth" });
     $.get("/get", { msg: rawText }).done(function(data) {
  //     var botHtml = '<p class="botText">' + data + "</p>";
