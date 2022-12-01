@@ -53,8 +53,8 @@ label_dict = dict(zip(num_label_list, text_label_list))
 
 #global list_of_docs
 #global k12, File
-global doc_dict, doc_ordered
-global file_of_docs #list_name
+global doc_ordered #doc_dict
+#global file_of_docs list_name
 global file_count# , list_of_files
 global conn_dict
 #data.k12=-1
@@ -260,11 +260,13 @@ def sort_docs(doc_dict):
             doc_ordered[key]=doc_dict[key]
     return doc_ordered
 class dataStore():
-    k12 = 0
+    k12 = 2
     File = False
     file_count = 0
     list_of_docs = []
     list_name = "list_of_docs"
+    file_of_docs = "Docs"
+    doc_dict ={}
     #Local = False
     #data.File = False
 data = dataStore()
@@ -272,8 +274,8 @@ data = dataStore()
 
 def process_msg(userText):
     #userText = request.args.get('msg')
-    global doc_dict, doc_ordered
-    global file_of_docs  # list_of_docs
+    global doc_ordered # doc_dict, 
+    #global file_of_docs   list_of_docs
     #global file_count# , list_of_files
     #, data _____________________
     # Local = True
@@ -299,28 +301,28 @@ def process_msg(userText):
     if data.k12 == 1:      #enter storage name for doc names
         data.k12 = 2
         if data.File:        #will work with file system
-            file_of_docs = userText
-            doc_dict={}
-            if Path(file_of_docs).is_file():
-                docs = open(file_of_docs,'r')
+            data.file_of_docs = userText
+            data.doc_dict={}
+            if Path(data.file_of_docs).is_file():
+                docs = open(data.file_of_docs,'r')
                 #print ("error1")
                 try:
-                    doc_dict=json.load(docs)
+                    data.doc_dict=json.load(docs)
                     #print ("error2")
                     docs.close
                     key_string=""
-                    for key in doc_dict.keys():
+                    for key in data.doc_dict.keys():
                         key_string+=key+"<br>"
                     return str("file exists and name store documents is:" 
-                        +file_of_docs + "and contains: "
+                        +data.file_of_docs + "and contains: "
                             +"<br>"+key_string) 
                 except ValueError:
                     return str("file exists but contains no files")
             else:
                 
-                doc_dict={}
-                docs = open(file_of_docs, 'w')
-                json.dump(doc_dict, docs, indent="")
+                data.doc_dict={}
+                docs = open(data.file_of_docs, 'w')
+                json.dump(data.doc_dict, docs, indent="")
                 docs.close()
                 return str("file name of file to store documents:"+file_of_docs)   
         else:  #will work with postgresql
@@ -351,17 +353,17 @@ def process_msg(userText):
             return str(filename + ' not found')
         if data.File:    # save text if data.File, otherwise testin postgresql table
             try:
-                docs = open(file_of_docs,'r')
+                docs = open(data.file_of_docs,'r')
             except FileNotFoundError:
                 return str("No file to store transcripts found, return to step 1"
                     +"<br>"+"Enter item from menu above")
             try:
-                doc_dict=json.load(docs)    
+                data.doc_dict=json.load(docs)    
             except ValueError:
-                doc_dict={}
-            doc_dict[filename]=text
-            docs = open(file_of_docs, 'w')
-            json.dump(doc_dict, docs, indent="")
+                data.doc_dict={}
+            data.doc_dict[filename]=text
+            docs = open(data.file_of_docs, 'w')
+            json.dump(data.doc_dict, docs, indent="")
             docs.close()
         else:
             data.list_of_docs.append(filename) 
@@ -380,8 +382,8 @@ def process_msg(userText):
             files_list = f.read()
             files_list= data.Files_list.split(',')
             f.close()
-            docs = open(file_of_docs,'r')
-            doc_dict=json.load(docs)
+            docs = open(data.file_of_docs,'r')
+            data.doc_dict=json.load(docs)
            
             if Path(docs_file).is_data.File():
                 f = open(docs_file, 'r')
@@ -395,9 +397,9 @@ def process_msg(userText):
                         file_list.append(doc)
                     else:
                         file_list.append(doc)
-                        doc_dict[doc]=text        
-                docs = open(file_of_docs, 'w')
-                json.dump(doc_dict, docs, indent="")
+                        data.doc_dict[doc]=text        
+                docs = open(data.file_of_docs, 'w')
+                json.dump(data.doc_dict, docs, indent="")
                 docs.close()
                 #return str("files added: "+" ".join(file_list)+
                 #    "files not found: " +" ".join(file_list)) 
@@ -434,7 +436,7 @@ def process_msg(userText):
     elif data.k12 == 5:
         data.k12=2
         if data.File:
-            return str("The data.File holding your documents, "+str(Path(file_of_docs).absolute())+" has been closed."
+            return str("The data.File holding your documents, "+str(Path(data.file_of_docs).absolute())+" has been closed."
                 +"<br>"+"Enter item from menu above")
         else:
             return str("The list of transcripts, "+data.list_name+", has been closed."
@@ -443,10 +445,10 @@ def process_msg(userText):
         data.k12=2
         if userText == 'label':
             if data.File:
-                docs = open(file_of_docs,'r')
-                doc_dict=json.load(docs)
+                docs = open(data.file_of_docs,'r')
+                data.doc_dict=json.load(docs)
                 docs.close()
-                list_of_files = list(doc_dict.keys())
+                list_of_files = list(data.doc_dict.keys())
             else:
                 list_of_files = data.list_of_docs
             key_string = "file         label    initial text"+"<br>"
@@ -455,13 +457,13 @@ def process_msg(userText):
             for key in list_of_files:
                 if len(key) > maxlen_key: maxlen_key = len(key)
                 if data.File:
-                    if isinstance(doc_dict[key], list):
+                    if isinstance(data.doc_dict[key], list):
                         pass                        
                     else:
-                        pd_pred_raw = convert_raw([doc_dict[key]], nmf, vectorizer, maxind_fixed)
+                        pd_pred_raw = convert_raw([data.doc_dict[key]], nmf, vectorizer, maxind_fixed)
                         label = pd_pred_raw['pred_label'][0]
                         #print ("label=", label, 'type:', type(label))
-                        doc_dict[key] = [label, doc_dict[key]]
+                        data.doc_dict[key] = [label, data.doc_dict[key]]
                 else:
                     filename = key
                     text = get_transcript(filename, File = data.File)
@@ -476,12 +478,12 @@ def process_msg(userText):
                 space = maxlen_key - 4
                 key_string = "file "+"&nbsp"*space+" label "+"&nbsp"*3+" initial text"+"<br>"
                 if data.File:
-                    doc_ordered = sort_docs(doc_dict)
+                    doc_ordered = sort_docs(data.doc_dict)
                     for key in doc_ordered.keys():
                         space=maxlen_key+2-len(key)
-                        space2=10-len(doc_dict[key][0])
-                        key_string+=key+" "+"&nbsp"*space+doc_dict[key][0]+"&nbsp"*space2+ doc_dict[key][1][:60]+"<br>"
-                    docs = open(file_of_docs,'w')   
+                        space2=10-len(data.doc_dict[key][0])
+                        key_string+=key+" "+"&nbsp"*space+data.doc_dict[key][0]+"&nbsp"*space2+ data.doc_dict[key][1][:60]+"<br>"
+                    docs = open(data.file_of_docs,'w')   
                     json.dump(doc_ordered, docs, indent="")
                     docs.close()
                 else:
@@ -514,7 +516,7 @@ def process_msg(userText):
                 data.k12 = 8
                 data.file_count = 0
                 if data.File:
-                    docs = open(file_of_docs,'r')
+                    docs = open(data.file_of_docs,'r')
                     doc_ordered = json.load(docs, object_pairs_hook=OrderedDict)
                     docs.close()
                     data.list_of_docs = list(doc_ordered.keys())
@@ -539,7 +541,7 @@ def process_msg(userText):
             if data.file_count>= len(data.list_of_docs):
                 data.k12=2
                 if data.File:
-                    docs = open(file_of_docs,'w')
+                    docs = open(data.file_of_docs,'w')
                     json.dump(doc_ordered, docs, indent="")
                     docs.close()
                 
@@ -547,8 +549,8 @@ def process_msg(userText):
                     +"<br>"+"Enter item from menu above")
         key = data.list_of_docs[data.file_count]
         if data.File:
-            label = doc_dict[key][0]
-            text = doc_dict[key][1]
+            label = data.doc_dict[key][0]
+            text = data.doc_dict[key][1]
         else:
             #print ("key=", key, "list_of_files: ", list_of_files, "file_count=",data.file_count )
             index = get_index(key)
@@ -569,7 +571,7 @@ def process_msg(userText):
             return str("Continue, enter item from menu above")
 
 
-    else:
+    elif data.k12 == 2:
         print ("Entering menu selection, k12=", data.k12)
         if userText == '1':
             data.k12=1
@@ -592,12 +594,12 @@ def process_msg(userText):
             if data.File:
                 return str("The file of documents will be closed it can be reopened to add documents<br>"+
                     "or it can be opened to sort and analyzed douments. It will be saved as:<br>"+
-                    file_of_docs+" in path: " +str(Path(file_of_docs).absolute())+"<br>"
+                    data.file_of_docs+" in path: " +str(Path(data.file_of_docs).absolute())+"<br>"
                     +"Type <close> to close file, any other entry will abort closing data.File")
             else:
                 return str("The file of documents will be closed it can be reopened to add documents<br>"+
                     "or it can be opened to sort and analyzed douments. It will be saved as:<br>"+
-                    file_of_docs+" in path: " +str(Path(file_of_docs).absolute())+"<br>"
+                    data.file_of_docs+" in path: " +str(Path(data.file_of_docs).absolute())+"<br>"
                     +"Type <close> to close file, any other entry will abort closing data.File")
         if userText == '5':
             data.k12=6
@@ -605,7 +607,7 @@ def process_msg(userText):
             if data.File:
                 return str("The documents in file of documents will be labelled with Note, test, or procedure.<br>"+
                 "The file, label, and initial text will be displayed.<br>"+
-                "files are in: "+transcripts+" in path: " +str(Path(file_of_docs).absolute())+"<br>"
+                "files are in: "+transcripts+" in path: " +str(Path(data.file_of_docs).absolute())+"<br>"
                 +"Type label to label files, any other entry will abort labelling transcripts")
             else:
                 return str("The documents in file of documents will be labelled with Note, test, or procedure.<br>"+
@@ -623,7 +625,7 @@ def process_msg(userText):
             print ('data.state2=', data.k12, "userText=", userText)
             if data.File:
                 doc = 0
-                docs = open(file_of_docs,'r')
+                docs = open(data.file_of_docs,'r')
                 doc_ordered = json.load(docs, object_pairs_hook=OrderedDict)
                 docs.close()
                 list_of_files = list(doc_ordered.keys())
@@ -668,8 +670,7 @@ def process_msg(userText):
             print ('invalid userText=', userText)
             return str(userText+" is not a valid selection from above")
     print ("should never get here**************")
-    lock.release()
-    threadLock.release()
+
 
 
 @app.route("/")
@@ -709,7 +710,8 @@ def get_bot_response():
     return process_msg(userText)
 
 
-
+lock.release()
+threadLock.release()
 if __name__ == "__main__":
     app.run()
     
