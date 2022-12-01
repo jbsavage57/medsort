@@ -244,21 +244,21 @@ def sort_list(doc_list):
 
 # def sort_docs(doc_dict): returns OrderedDict() of doc_dict in orderof tests, procedures, notes
 def sort_docs(doc_dict):
-    doc_ordered = OrderedDict()
+    data.doc_ordered = OrderedDict()
     for key in doc_dict.keys():
         
         doc_list = list(doc_dict[key])
         if doc_list[0] == 'test':
-            doc_ordered[key]=doc_dict[key]
+            data.doc_ordered[key]=doc_dict[key]
     for key in doc_dict.keys():
         doc_list = list(doc_dict[key])
         if doc_list[0] == 'procedure':
-            doc_ordered[key]=doc_dict[key] 
+            data.doc_ordered[key]=doc_dict[key] 
     for key in doc_dict.keys():
         doc_list = list(doc_dict[key])
         if doc_list[0] == 'note':
-            doc_ordered[key]=doc_dict[key]
-    return doc_ordered
+            data.doc_ordered[key]=doc_dict[key]
+    return data.doc_ordered
 class dataStore():
     k12 = 2
     File = False
@@ -267,6 +267,7 @@ class dataStore():
     list_name = "list_of_docs"
     file_of_docs = "Docs"
     doc_dict ={}
+    doc_ordered = []
     #Local = False
     #data.File = False
 data = dataStore()
@@ -274,7 +275,7 @@ data = dataStore()
 
 def process_msg(userText):
     #userText = request.args.get('msg')
-    global doc_ordered # doc_dict, 
+    #global doc_ordered # doc_dict, 
     #global file_of_docs   list_of_docs
     #global file_count# , list_of_files
     #, data _____________________
@@ -478,13 +479,13 @@ def process_msg(userText):
                 space = maxlen_key - 4
                 key_string = "file "+"&nbsp"*space+" label "+"&nbsp"*3+" initial text"+"<br>"
                 if data.File:
-                    doc_ordered = sort_docs(data.doc_dict)
-                    for key in doc_ordered.keys():
+                    data.doc_ordered = sort_docs(data.doc_dict)
+                    for key in data.doc_ordered.keys():
                         space=maxlen_key+2-len(key)
                         space2=10-len(data.doc_dict[key][0])
                         key_string+=key+" "+"&nbsp"*space+data.doc_dict[key][0]+"&nbsp"*space2+ data.doc_dict[key][1][:60]+"<br>"
                     docs = open(data.file_of_docs,'w')   
-                    json.dump(doc_ordered, docs, indent="")
+                    json.dump(data.doc_ordered, docs, indent="")
                     docs.close()
                 else:
                     data.list_of_docs = sort_list(list_of_files)
@@ -517,11 +518,11 @@ def process_msg(userText):
                 data.file_count = 0
                 if data.File:
                     docs = open(data.file_of_docs,'r')
-                    doc_ordered = json.load(docs, object_pairs_hook=OrderedDict)
+                    data.doc_ordered = json.load(docs, object_pairs_hook=OrderedDict)
                     docs.close()
-                    data.list_of_docs = list(doc_ordered.keys())
+                    data.list_of_docs = list(data.doc_ordered.keys())
                 #print (data.file_count, len(list_of_files), 1)
-                #print (doc_ordered)
+                #print (data.doc_ordered)
             else:
                 data.k12 = 2
                 return str("Review aborted"
@@ -529,7 +530,7 @@ def process_msg(userText):
         else:
             note = userText
             if data.File:
-                data_list = list(doc_ordered[list_of_files[data.file_count]])
+                data_list = list(data.doc_ordered[list_of_files[data.file_count]])
                 data_list.append(note)
             else:
                 filename = data.list_of_docs[data.file_count]
@@ -542,7 +543,7 @@ def process_msg(userText):
                 data.k12=2
                 if data.File:
                     docs = open(data.file_of_docs,'w')
-                    json.dump(doc_ordered, docs, indent="")
+                    json.dump(data.doc_ordered, docs, indent="")
                     docs.close()
                 
                 return str('No more files to review'
@@ -626,15 +627,15 @@ def process_msg(userText):
             if data.File:
                 doc = 0
                 docs = open(data.file_of_docs,'r')
-                doc_ordered = json.load(docs, object_pairs_hook=OrderedDict)
+                data.doc_ordered = json.load(docs, object_pairs_hook=OrderedDict)
                 docs.close()
-                list_of_files = list(doc_ordered.keys())
+                list_of_files = list(data.doc_ordered.keys())
             
                 file_string = "Your files are as follows:"+"<br>"+ \
                         "file '|' label '|' initial text'"+"&nbsp"*17+ "'|' notation"+"<br>"
-                for key in doc_ordered.keys():
+                for key in data.doc_ordered.keys():
                     file_string += key 
-                    for item in doc_ordered[key]:
+                    for item in data.doc_ordered[key]:
                         file_string += " | " + item[:30]
                     file_string += "<br>" 
                 file_string += "Type q to quit; otherwise continue"
