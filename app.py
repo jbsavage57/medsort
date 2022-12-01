@@ -70,7 +70,7 @@ heroku_dict = {"user":"tdxakwnpoqnwuc",
 
 
 
-Local = True
+Local = False
 if Local:
     conn_dict = local_dict
 else:
@@ -250,7 +250,7 @@ def sort_docs(doc_dict):
             data.doc_ordered[key]=doc_dict[key]
     return data.doc_ordered
 class dataStore():
-    k12 = [2]
+    k12 = [2,2,2,2]
     File = False
     file_count = 0
     list_of_docs = []
@@ -266,7 +266,7 @@ data = dataStore()
 def process_msg(userText):
    
     
-    print ('data.state1=', data.k12[0], "userText=", userText)
+    print ('data.state1=', data.k12, "userText=", userText)
     if data.k12[0] == 1:      #enter storage name for doc names
         data.k12[0] = 2
         if data.File:        #will work with file system
@@ -541,26 +541,26 @@ def process_msg(userText):
 
 
     elif data.k12[0] == 2:
-        print ("Entering menu selection, k12=", data.k12[0])
+        print ("Entering menu selection, k12=", data.k12)
         if userText == '1':
             data.k12[0]=1
-            print ('data.state2=', data.k12[0], "userText=", userText)
+            print ('data.state2=', data.k12, "userText=", userText)
             if data.File:
                 return str("Enter file name of file to store documents(.json)")   
             else:
-                print ('data.state2.5=', data.k12[0], "userText=", userText)
+                print ('data.state2.5=', data.k12, "userText=", userText)
                 return str("Enter name of list to store transcription names")
         if userText == '2':
             data.k12[0]=3
-            print ('data.state2=', data.k12[0], "userText=", userText)
+            print ('data.state2=', data.k12, "userText=", userText)
             return str("Enter file name of the document")  
         if userText == '3':
             data.k12[0]=4
-            print ('data.state2=', data.k12[0], "userText=", userText)
+            print ('data.state2=', data.k12, "userText=", userText)
             return str("Enter csv file of documents(.csv)")
         if userText == '4':
             data.k12[0]=5
-            print ('data.state2=', data.k12[0], "userText=", userText)
+            print ('data.state2=', data.k12, "userText=", userText)
             if data.File:
                 return str("The file of documents will be closed it can be reopened to add documents<br>"+
                     "or it can be opened to sort and analyzed douments. It will be saved as:<br>"+
@@ -573,7 +573,7 @@ def process_msg(userText):
                     +"Type <close> to close file, any other entry will abort closing data.File")
         if userText == '5':
             data.k12[0]=6
-            print ('data.state2=', data.k12[0], "userText=", userText)
+            print ('data.state2=', data.k12, "userText=", userText)
             if data.File:
                 return str("The documents in file of documents will be labelled with Note, test, or procedure.<br>"+
                 "The file, label, and initial text will be displayed.<br>"+
@@ -586,13 +586,13 @@ def process_msg(userText):
                 +"Type label to label files, any other entry will abort labelling transcripts")
         if userText == '6':
             data.k12[0]=7
-            print ('data.state2=', data.k12[0], "userText=", userText)
+            print ('data.state2=', data.k12, "userText=", userText)
             doc = 0
             return str("You can review each document in the file of documents and add a note"+"<br>"+
                 "Type review to review files, any other entry will abort reviewing transcripts")
         if userText == '7':
             data.k12[0]=9
-            print ('data.state2=', data.k12[0], "userText=", userText)
+            print ('data.state2=', data.k12, "userText=", userText)
             if data.File:
                 doc = 0
                 docs = open(data.file_of_docs,'r')
@@ -635,8 +635,8 @@ def process_msg(userText):
             return str(file_string)
 
         else:
-            data.k12[0]=2
-            print ('data.state2=', data.k12[0], "userText=", userText)
+            data.k12=2
+            print ('data.state2=', data.k12, "userText=", userText)
             print ('invalid userText=', userText)
             return str(userText+" is not a valid selection from above")
     print ("should never get here**************")
@@ -651,7 +651,7 @@ print ("test")
 @app.route("/get" )
 def get_bot_response():
     userText = request.args.get('msg')
-    print ("New text input, userText=", userText,"k12-0=",data.k12[0])
+    print ("New text input, userText=", userText,"k12-0=",data.k12)
     return process_msg(userText)
 
 
