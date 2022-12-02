@@ -50,10 +50,6 @@ num_label_list = [0,1,2]                                      #list of manually 
 text_label_list = ['test', 'procedure', 'note']                #list of descriptive label types
 label_dict = dict(zip(num_label_list, text_label_list))
 
-
-
-#Local = False
-#data.k12[0] = 0
 #global conn_dict #, local_dict, heroku_dict    
 local_dict = {"user":"postgres",
 "password":"Mm033062!",
@@ -250,7 +246,7 @@ def sort_docs(doc_dict):
             data.doc_ordered[key]=doc_dict[key]
     return data.doc_ordered
 class dataStore():
-    k12 = [2,2,0,0]
+    k12 = [32,2,0,0]
     File = False
     file_count = 0
     list_of_docs = []
@@ -268,7 +264,7 @@ def process_msg(userText):
     
     print ('data.state1=', data.k12, "userText=", userText)
     if data.k12[0] == 1:      #enter storage name for doc names
-        data.k12[0] = 2
+        data.k12[0] = 11
         data.k12[2] = 1
         if data.File:        #will work with file system
             data.file_of_docs = userText
@@ -317,7 +313,7 @@ def process_msg(userText):
     elif data.k12[0] == 3:       #enter single file name save doc
         filename = userText
         filename = filename.strip()
-        data.k12[0] = 2
+        data.k12[0] = 12
         data.k12[2] = 2
         text = get_transcript(filename, File=data.File)
         if text == -1:
@@ -345,7 +341,7 @@ def process_msg(userText):
     elif data.k12[0] == 4: #enter list of files
         print ("entered list of files")
         docs_file = userText
-        data.k12[0] = 2
+        data.k12[0] = 13
         data.k12[2] = 3
         nonfile_list =[]
         file_list=[]
@@ -406,7 +402,7 @@ def process_msg(userText):
                     +"Enter item from menu above")                   
             
     elif data.k12[0] == 5:
-        data.k12[0] = 2
+        data.k12[0] = 14
         data.k12[2] = 4
         if data.File:
             return str("The data.File holding your documents, "+str(Path(data.file_of_docs).absolute())+" has been closed."
@@ -415,7 +411,7 @@ def process_msg(userText):
             return str("The list of transcripts, "+data.list_name+", has been closed."
                 +"<br>"+"Enter item from menu above")
     elif data.k12[0] == 6:
-        data.k12[0] = 2
+        data.k12[0] = 16
         data.k12[2] = 5
         if userText == 'label':
             if data.File:
@@ -498,7 +494,7 @@ def process_msg(userText):
                 #print (data.file_count, len(list_of_files), 1)
                 #print (data.doc_ordered)
             else:
-                data.k12[0] = 2
+                data.k12[0] = 17
                 data.k12[2] = 6
                 return str("Review aborted"
                     +"<br>"+"Enter item from menu above")
@@ -515,7 +511,7 @@ def process_msg(userText):
             data.file_count = data.file_count + 1
             #print (data.file_count, len(list_of_files), 3)
             if data.file_count>= len(data.list_of_docs):
-                data.k12[0] = 2
+                data.k12[0] = 18
                 data.k12[2] = 7
                 if data.File:
                     docs = open(data.file_of_docs,'w')
@@ -537,7 +533,7 @@ def process_msg(userText):
         return str(key_string+text+"<br>"+"Enter notes")
 
     elif data.k12[0] == 9:
-        data.k12[0] = 2
+        data.k12[0] = 19
         data.k12[2] = 8
 
         if userText == 'q':
@@ -549,7 +545,7 @@ def process_msg(userText):
             return str("Continue, enter item from menu above")
 
 
-    elif data.k12[0] == 2:
+    elif data.k12[0] >10:
         print ("Entering menu selection, k12=", data.k12)
         if userText == '1':
             data.k12[0] = 1
@@ -651,7 +647,7 @@ def process_msg(userText):
             return str(file_string)
 
         else:
-            data.k12[0] = 2
+            data.k12[0] = 20
             data.k12[3] = 8
             print ('data.state2=', data.k12, "userText=", userText)
             print ('invalid userText=', userText)
@@ -665,12 +661,12 @@ def homepage():
     return render_template("main.html");
 print ("test")
 
-@app.route("/get" )
+@app.route("/get")
 def get_bot_response():
     userText = request.args.get('msg')
     print ("New text input, userText=", userText,"k12-0=",data.k12)
     return process_msg(userText)
-print ("at the end, New text input, userText=", userText,"k12-0=",data.k12)
+print ("at the end, New text input")
 
 lock.release()
 threadLock.release()
