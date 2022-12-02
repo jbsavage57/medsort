@@ -670,7 +670,7 @@ def get_bot_response():
     userText = request.args.get('msg')
     print ("New text input, userText=", userText,"k12-0=",data.k12)
     return process_msg(userText)
-
+print ("at the end, New text input, userText=", userText,"k12-0=",data.k12)
 
 lock.release()
 threadLock.release()
