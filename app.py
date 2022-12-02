@@ -293,23 +293,23 @@ def process_msg(userText):
                 return str("file name of file to store documents:"+file_of_docs)   
         else:  #will work with postgresql
             data.list_name = userText
-            try:
-                if len(data.list_of_docs) == 0:
-                    globals()[data.list_name] = data.list_of_docs
-                    return str("List "+data.list_name+" exists but contains no transcripts"
-                    +"<br>"+"Enter item from menu above")   
-                key_string = ""
-                for key in data.list_of_docs:
-                        key_string+=key+"<br>"
+            #try:
+            if len(data.list_of_docs) == 0:
                 globals()[data.list_name] = data.list_of_docs
-                return str("List exists and is named:" 
-                    +list_name+" and contains transcripts: "
-                        +"<br>"+key_string) 
-            except NameError:
-                data.list_of_docs = []
-                globals()[data.list_name] = data.list_of_docs
-                return str("file list to save transcript names: "+data.list_name
-                    +"<br>"+"Enter item from menu above")
+                return str("List "+data.list_name+" exists but contains no transcripts"
+                +"<br>"+"Enter item from menu above")   
+            key_string = ""
+            for key in data.list_of_docs:
+                    key_string+=key+"<br>"
+            globals()[data.list_name] = data.list_of_docs
+            return str("List exists and is named:" 
+                +list_name+" and contains transcripts: "
+                    +"<br>"+key_string) 
+            #except NameError:
+                # data.list_of_docs = []
+                # globals()[data.list_name] = data.list_of_docs
+                # return str("file list to save transcript names: "+data.list_name
+                #     +"<br>"+"Enter item from menu above")
     elif data.k12[0] == 3:       #enter single file name save doc
         filename = userText
         filename = filename.strip()
