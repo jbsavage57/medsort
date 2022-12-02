@@ -86,7 +86,9 @@ else:
     conn_dict = heroku_dict
 def get_data_sql(table, index, column, select_column, conn_dict=conn_dict):
     #global conn_dict
-    try:
+        data=-1
+    #try:
+        
         connection = psycopg2.connect(
             user=conn_dict["user"],
             password=conn_dict["password"],
@@ -100,24 +102,24 @@ def get_data_sql(table, index, column, select_column, conn_dict=conn_dict):
         #print (postgreSQL_select_Query)
         cursor.execute(postgreSQL_select_Query)
         data = cursor.fetchall()
-        #print ("data", type(data), data, "\n"*2)
+        print ("data", type(data), data, "\n"*2)
         data = data[0][0]
         #print ("testsql",index, type(data), data, "\n"*2)
-    except (Exception, psycopg2.Error) as error:
-        print("Error while fetching data from PostgreSQL", error)
-        data = -1
-    finally:
+    #except (Exception, psycopg2.Error) as error:
+    #    print("Error while fetching data from PostgreSQL", error)
+    #    data = -1
+    #finally:
         # closing database connection.
         if connection:
             cursor.close()
             connection.close()
             #print("PostgreSQL connection is closed")
     #print ("testsql",index, type(label), label, "\n"*2)
-    return data
+        return data
 
 def set_data_sql(index, column, data,conn_dict=conn_dict):
-    
-    try:
+
+    #try:
         connection = psycopg2.connect(
             user=conn_dict["user"],
             password=conn_dict["password"],
@@ -135,19 +137,19 @@ def set_data_sql(index, column, data,conn_dict=conn_dict):
         cursor.execute(postgreSQL_select_Query)
         #print (postgreSQL_select_Query)
         data = cursor.fetchall()
-        #print ("query label", label)
+        print ("data", data)
         data = data[0][0]
         #print ("last label", label)
-    except (Exception, psycopg2.Error) as error:
-        print("Error while fetching data from PostgreSQL", error)
-        data = -1
-    finally:
+    #except (Exception, psycopg2.Error) as error:
+    #    print("Error while fetching data from PostgreSQL", error)
+    #    data = -1
+    #finally:
         # closing database connection.
         if connection:
             cursor.close()
             connection.close()
             #print("PostgreSQL connection is closed")
-    return data
+        return data
 def get_note_sql(index):
     column = "note"
     select_column = "index"
@@ -303,7 +305,7 @@ def process_msg(userText):
                     key_string+=key+"<br>"
             globals()[data.list_name] = data.list_of_docs
             return str("List exists and is named:" 
-                +list_name+" and contains transcripts: "
+                +data.list_name+" and contains transcripts: "
                     +"<br>"+key_string) 
             #except NameError:
                 # data.list_of_docs = []
@@ -621,16 +623,20 @@ def process_msg(userText):
                     file_string += "<br>" 
                 file_string += "Type q to quit; otherwise continue"
             else:
-                try:
+                #try:
+                if data.list_of_docs !=[]:
                     maxlen_key = len(max(data.list_of_docs, key=len))
                     space=maxlen_key-4
                     file_string = "Your files are as follows:"+"<br>"+ \
                         "file "+"&nbsp"*space+" label "+"&nbsp"*3+" initial text"\
                         +"&nbsp"*36+"notation"+"<br>"
                         #"file '|' label '|' initial text'"+"&nbsp"*17+ "'|' notation"+"<br>"
-                except ValueError:
-                    print ("list_of_docs: ",data.list_of_docs)
+                #except ValueError:
+                else:
+                    
                     file_string = "file list is empty, please select data.Files if desired"+"<br>"
+                    file_string += "Type q to quit; any other entry will continue"
+                    return str(file_string)
                 for doc in data.list_of_docs:
                     index = get_index(doc)
                     label = get_label_sql(index)
