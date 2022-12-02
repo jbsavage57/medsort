@@ -250,7 +250,7 @@ def sort_docs(doc_dict):
             data.doc_ordered[key]=doc_dict[key]
     return data.doc_ordered
 class dataStore():
-    k12 = [2,2,2,2]
+    k12 = [2,2,0,0]
     File = False
     file_count = 0
     list_of_docs = []
@@ -269,6 +269,7 @@ def process_msg(userText):
     print ('data.state1=', data.k12, "userText=", userText)
     if data.k12[0] == 1:      #enter storage name for doc names
         data.k12[0] = 2
+        data.k12[2] = 1
         if data.File:        #will work with file system
             data.file_of_docs = userText
             data.doc_dict={}
@@ -317,6 +318,7 @@ def process_msg(userText):
         filename = userText
         filename = filename.strip()
         data.k12[0] = 2
+        data.k12[2] = 2
         text = get_transcript(filename, File=data.File)
         if text == -1:
             return str(filename + ' not found')
@@ -344,6 +346,7 @@ def process_msg(userText):
         print ("entered list of files")
         docs_file = userText
         data.k12[0] = 2
+        data.k12[2] = 3
         nonfile_list =[]
         file_list=[]
         if data.File:
@@ -403,7 +406,8 @@ def process_msg(userText):
                     +"Enter item from menu above")                   
             
     elif data.k12[0] == 5:
-        data.k12[0]=2
+        data.k12[0] = 2
+        data.k12[2] = 4
         if data.File:
             return str("The data.File holding your documents, "+str(Path(data.file_of_docs).absolute())+" has been closed."
                 +"<br>"+"Enter item from menu above")
@@ -411,7 +415,8 @@ def process_msg(userText):
             return str("The list of transcripts, "+data.list_name+", has been closed."
                 +"<br>"+"Enter item from menu above")
     elif data.k12[0] == 6:
-        data.k12[0]=2
+        data.k12[0] = 2
+        data.k12[2] = 5
         if userText == 'label':
             if data.File:
                 docs = open(data.file_of_docs,'r')
@@ -483,6 +488,7 @@ def process_msg(userText):
         if data.k12[0] == 7:
             if userText == 'review':
                 data.k12[0] = 8
+                data.k12[2] = 6
                 data.file_count = 0
                 if data.File:
                     docs = open(data.file_of_docs,'r')
@@ -493,6 +499,7 @@ def process_msg(userText):
                 #print (data.doc_ordered)
             else:
                 data.k12[0] = 2
+                data.k12[2] = 6
                 return str("Review aborted"
                     +"<br>"+"Enter item from menu above")
         else:
@@ -508,7 +515,8 @@ def process_msg(userText):
             data.file_count = data.file_count + 1
             #print (data.file_count, len(list_of_files), 3)
             if data.file_count>= len(data.list_of_docs):
-                data.k12[0]=2
+                data.k12[0] = 2
+                data.k12[2] = 7
                 if data.File:
                     docs = open(data.file_of_docs,'w')
                     json.dump(data.doc_ordered, docs, indent="")
@@ -529,7 +537,8 @@ def process_msg(userText):
         return str(key_string+text+"<br>"+"Enter notes")
 
     elif data.k12[0] == 9:
-        data.k12[0] =2
+        data.k12[0] = 2
+        data.k12[2] = 8
 
         if userText == 'q':
             data.list_of_docs = []
@@ -543,7 +552,8 @@ def process_msg(userText):
     elif data.k12[0] == 2:
         print ("Entering menu selection, k12=", data.k12)
         if userText == '1':
-            data.k12[0]=1
+            data.k12[0] = 1
+            data.k12[3] = 1
             print ('data.state2=', data.k12, "userText=", userText)
             if data.File:
                 return str("Enter file name of file to store documents(.json)")   
@@ -551,15 +561,18 @@ def process_msg(userText):
                 print ('data.state2.5=', data.k12, "userText=", userText)
                 return str("Enter name of list to store transcription names")
         if userText == '2':
-            data.k12[0]=3
+            data.k12[0] = 3
+            data.k12[3] = 2
             print ('data.state2=', data.k12, "userText=", userText)
             return str("Enter file name of the document")  
         if userText == '3':
-            data.k12[0]=4
+            data.k12[0] = 4
+            data.k12[3] = 3
             print ('data.state2=', data.k12, "userText=", userText)
             return str("Enter csv file of documents(.csv)")
         if userText == '4':
-            data.k12[0]=5
+            data.k12[0] = 5
+            data.k12[3] = 4
             print ('data.state2=', data.k12, "userText=", userText)
             if data.File:
                 return str("The file of documents will be closed it can be reopened to add documents<br>"+
@@ -572,7 +585,8 @@ def process_msg(userText):
                     data.file_of_docs+" in path: " +str(Path(data.file_of_docs).absolute())+"<br>"
                     +"Type <close> to close file, any other entry will abort closing data.File")
         if userText == '5':
-            data.k12[0]=6
+            data.k12[0] = 6
+            data.k12[3] = 5
             print ('data.state2=', data.k12, "userText=", userText)
             if data.File:
                 return str("The documents in file of documents will be labelled with Note, test, or procedure.<br>"+
@@ -585,13 +599,15 @@ def process_msg(userText):
                 "data is in: postgresql table mts"+"<br>"
                 +"Type label to label files, any other entry will abort labelling transcripts")
         if userText == '6':
-            data.k12[0]=7
+            data.k12[0] = 7
+            data.k12[3] = 6
             print ('data.state2=', data.k12, "userText=", userText)
             doc = 0
             return str("You can review each document in the file of documents and add a note"+"<br>"+
                 "Type review to review files, any other entry will abort reviewing transcripts")
         if userText == '7':
-            data.k12[0]=9
+            data.k12[0] = 9
+            data.k12[3] = 7
             print ('data.state2=', data.k12, "userText=", userText)
             if data.File:
                 doc = 0
@@ -635,7 +651,8 @@ def process_msg(userText):
             return str(file_string)
 
         else:
-            data.k12=2
+            data.k12[0] = 2
+            data.k12[3] = 8
             print ('data.state2=', data.k12, "userText=", userText)
             print ('invalid userText=', userText)
             return str(userText+" is not a valid selection from above")

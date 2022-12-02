@@ -204,17 +204,20 @@ position:absolute;top:5%;left:5%;
 
 <script>  function 
 getBotResponse() {
-    
+// menu input    
     var rawText = $("#textInput").val();
 //11/30    var userHtml = '<p class="userText"><span>'+"l*l" + rawText + "</span></p>";
 // clears entry tab
     $("#textInput").val("");
 //Menu entry
-    document.getElementById("reflect").innerHTML = "<span style=userText>"+"Your entry: 2" + rawText+"</span>";
-//    $("#chatbox").append(userHtml);
+
+    document.getElementById("reflect").innerHTML = "<span style=userText>"+"Your entry: " + rawText+"</span>";
+
+    //    $("#chatbox").append(userHtml);
 //not used?
 //11/30    document.getElementById("userInput");
  //     .scrollIntoView({ block: "start", behavior: "smooth" });
+ // needed for input
     $.get("/get", { msg: rawText }).done(function(data) {
  //     var botHtml = '<p class="botText">' + data + "</p>";
      
