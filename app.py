@@ -36,10 +36,10 @@ from nlp_project_final_3 import convert, convert_raw, normalize_corpus_num
 
 #class App:
 app = Flask(__name__)        #, template_folder='templates'
-lock = multiprocessing.Lock()
-lock.acquire()
-threadLock = threading.Lock()
-threadLock.acquire()
+#lock = multiprocessing.Lock()
+#lock.acquire()
+#threadLock = threading.Lock()
+#threadLock.acquire()
 #set to enter data from Files
 
 vectorizer = joblib.load("vectorizer.jbl")
@@ -674,7 +674,7 @@ def get_bot_response():
     return process_msg(userText)
 print ("at the end, New text input")
 
-lock.release()
-threadLock.release()
+#lock.release()
+#threadLock.release()
 if __name__ == "__main__":
     app.run()
